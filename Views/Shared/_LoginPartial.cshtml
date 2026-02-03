@@ -1,0 +1,83 @@
+@using Microsoft.AspNetCore.Identity
+@using LocalServicesBooking.Models.Entities
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+
+<ul class="navbar-nav">
+@if (SignInManager.IsSignedIn(User))
+{
+    var user = await UserManager.GetUserAsync(User);
+    
+    @if(user?.UserType == "Provider")
+    {
+        <li class="nav-item">
+            <a class="nav-link" asp-controller="Dashboard" asp-action="Index">
+                <i class="bi bi-speedometer2 me-1"></i> Provider Dashboard
+            </a>
+        </li>
+    }
+    else
+    {
+        <li class="nav-item">
+            <a class="nav-link" asp-controller="Dashboard" asp-action="Index">
+                <i class="bi bi-grid-3x3-gap me-1"></i> My Dashboard
+            </a>
+        </li>
+    }
+    
+    <li class="nav-item">
+        <a class="nav-link" asp-controller="Messaging" asp-action="Index">
+            <i class="bi bi-chat-dots-fill me-1"></i> Messages
+        </a>
+    </li>
+
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            @if (!string.IsNullOrEmpty(user?.ProfileImageUrl))
+            {
+                <img src="@user.ProfileImageUrl" alt="Profile" class="rounded-circle" style="width: 32px; height: 32px; object-fit: cover;">
+            }
+            else
+            {
+                <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; background: var(--gradient-primary); color: white; font-size: 0.8rem; font-weight: 600;">
+                    @(user?.FirstName?.FirstOrDefault())@(user?.LastName?.FirstOrDefault())
+                </div>
+            }
+            <span class="d-none d-lg-inline">@user?.FirstName</span>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end" style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+            <li>
+                <a class="dropdown-item" asp-controller="Account" asp-action="Profile" style="color: var(--text-primary);">
+                    <i class="bi bi-person me-2"></i> My Profile
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item" asp-controller="Dashboard" asp-action="Index" style="color: var(--text-primary);">
+                    <i class="bi bi-gear me-2"></i> Settings
+                </a>
+            </li>
+            <li><hr class="dropdown-divider" style="border-color: var(--border-color);"></li>
+            <li>
+                <form asp-controller="Account" asp-action="Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                    <button type="submit" class="dropdown-item" style="color: var(--error);">
+                        <i class="bi bi-box-arrow-right me-2"></i> Logout
+                    </button>
+                </form>
+            </li>
+        </ul>
+    </li>
+}
+else
+{
+    <li class="nav-item">
+        <a class="nav-link" asp-controller="Account" asp-action="Register">
+            <i class="bi bi-person-plus me-1"></i> Register
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="btn btn-primary btn-sm px-3" asp-controller="Account" asp-action="Login">
+            <i class="bi bi-box-arrow-in-right me-1"></i> Login
+        </a>
+    </li>
+}
+</ul>

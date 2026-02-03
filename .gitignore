@@ -1,0 +1,31 @@
+[Bb]in/
+[Oo]bj/
+*.user
+*.userosscache
+*.sln.docstates
+
+# User-specific files
+.vs/
+.vscode/
+.idea/
+
+# SQL Server files
+*.mdf
+*.ldf
+*.ndf
+
+# Packages
+*.nuget.props
+*.nuget.targets
+
+# Identity settings
+appsettings.Development.json
+# appsettings.Production.json # Uncomment if you want to keep production secrets out of GitHub
+
+# Secrets
+serviceAccountKey.json
+
+# Build & Publish
+publish/
+build.log
+*.exe

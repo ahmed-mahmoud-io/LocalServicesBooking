@@ -1,0 +1,276 @@
+@using Microsoft.AspNetCore.Identity
+@using LocalServicesBooking.Models.Entities
+@inject UserManager<User> UserManager
+
+@{
+    ViewData["Title"] = "Dashboard";
+    var user = await UserManager.GetUserAsync(User);
+    var isProvider = user?.UserType == "Provider";
+}
+
+<!-- Dashboard Header -->
+<section class="dashboard-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <div class="d-flex align-items-center gap-4">
+                    @if (!string.IsNullOrEmpty(user?.ProfileImageUrl))
+                    {
+                        <img src="@user.ProfileImageUrl" alt="Profile" class="rounded-circle" style="width: 80px; height: 80px; object-fit: cover; border: 3px solid var(--primary);">
+                    }
+                    else
+                    {
+                        <div class="rounded-circle d-flex align-items-center justify-content-center" 
+                             style="width: 80px; height: 80px; background: var(--gradient-primary); color: white; font-size: 2rem; font-weight: 600; border: 3px solid rgba(255,255,255,0.2);">
+                            @(user?.FirstName?.FirstOrDefault())@(user?.LastName?.FirstOrDefault())
+                        </div>
+                    }
+                    <div>
+                        <h2 class="mb-1">Welcome back, @user?.FirstName!</h2>
+                        <p class="text-secondary mb-0">
+                            @if (isProvider)
+                            {
+                                <span class="badge badge-primary me-2"><i class="bi bi-briefcase me-1"></i>Provider</span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-glass me-2"><i class="bi bi-person me-1"></i>Customer</span>
+                            }
+                            Member since @(user?.CreatedAt.ToString("MMMM yyyy") ?? "N/A")
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                <a asp-controller="Account" asp-action="Profile" class="btn btn-glass">
+                    <i class="bi bi-gear me-2"></i>Edit Profile
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-4" style="background: var(--bg-primary);">
+    <div class="container">
+        <!-- Quick Stats -->
+        <div class="dashboard-stats">
+            @if (isProvider)
+            {
+                <div class="stat-card" data-animate="fade-in-up">
+                    <div class="stat-card-icon">
+                        <i class="bi bi-calendar-check"></i>
+                    </div>
+                    <div class="stat-card-value">0</div>
+                    <div class="stat-card-label">Upcoming Bookings</div>
+                </div>
+                <div class="stat-card" data-animate="fade-in-up">
+                    <div class="stat-card-icon" style="background: linear-gradient(135deg, #22c55e, #16a34a);">
+                        <i class="bi bi-check-circle"></i>
+                    </div>
+                    <div class="stat-card-value">0</div>
+                    <div class="stat-card-label">Completed Jobs</div>
+                </div>
+                <div class="stat-card" data-animate="fade-in-up">
+                    <div class="stat-card-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+                        <i class="bi bi-star"></i>
+                    </div>
+                    <div class="stat-card-value">0.0</div>
+                    <div class="stat-card-label">Average Rating</div>
+                </div>
+                <div class="stat-card" data-animate="fade-in-up">
+                    <div class="stat-card-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
+                        <i class="bi bi-cash-stack"></i>
+                    </div>
+                    <div class="stat-card-value">$0</div>
+                    <div class="stat-card-label">This Month's Earnings</div>
+                </div>
+            }
+            else
+            {
+                <div class="stat-card" data-animate="fade-in-up">
+                    <div class="stat-card-icon">
+                        <i class="bi bi-calendar-check"></i>
+                    </div>
+                    <div class="stat-card-value">0</div>
+                    <div class="stat-card-label">Upcoming Appointments</div>
+                </div>
+                <div class="stat-card" data-animate="fade-in-up">
+                    <div class="stat-card-icon" style="background: linear-gradient(135deg, #22c55e, #16a34a);">
+                        <i class="bi bi-check-circle"></i>
+                    </div>
+                    <div class="stat-card-value">0</div>
+                    <div class="stat-card-label">Completed Services</div>
+                </div>
+                <div class="stat-card" data-animate="fade-in-up">
+                    <div class="stat-card-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+                        <i class="bi bi-heart"></i>
+                    </div>
+                    <div class="stat-card-value">0</div>
+                    <div class="stat-card-label">Favorite Providers</div>
+                </div>
+                <div class="stat-card" data-animate="fade-in-up">
+                    <div class="stat-card-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
+                        <i class="bi bi-chat-dots"></i>
+                    </div>
+                    <div class="stat-card-value">0</div>
+                    <div class="stat-card-label">Unread Messages</div>
+                </div>
+            }
+        </div>
+        
+        <div class="row g-4">
+            <!-- Main Content -->
+            <div class="col-lg-8">
+                @if (isProvider)
+                {
+                    <!-- Provider Quick Actions -->
+                    <div class="card mb-4" data-animate="fade-in-up">
+                        <div class="card-body">
+                            <h5 class="mb-4"><i class="bi bi-lightning me-2 text-primary"></i>Quick Actions</h5>
+                            <div class="row g-3">
+                                <div class="col-sm-6 col-md-4">
+                                    <a asp-controller="Provider" asp-action="ManageServices" class="btn btn-glass w-100 py-3">
+                                        <i class="bi bi-box-seam d-block fs-4 mb-2"></i>
+                                        Manage Services
+                                    </a>
+                                </div>
+                                <div class="col-sm-6 col-md-4">
+                                    <a asp-controller="Provider" asp-action="Availability" class="btn btn-glass w-100 py-3">
+                                        <i class="bi bi-calendar3 d-block fs-4 mb-2"></i>
+                                        Set Availability
+                                    </a>
+                                </div>
+                                <div class="col-sm-6 col-md-4">
+                                    <a asp-controller="Messaging" asp-action="Index" class="btn btn-glass w-100 py-3">
+                                        <i class="bi bi-chat-dots d-block fs-4 mb-2"></i>
+                                        Messages
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <!-- Customer Quick Actions -->
+                    <div class="card mb-4" data-animate="fade-in-up">
+                        <div class="card-body">
+                            <h5 class="mb-4"><i class="bi bi-lightning me-2 text-primary"></i>Quick Actions</h5>
+                            <div class="row g-3">
+                                <div class="col-sm-6 col-md-4">
+                                    <a asp-controller="Search" asp-action="Index" class="btn btn-glass w-100 py-3">
+                                        <i class="bi bi-search d-block fs-4 mb-2"></i>
+                                        Find Services
+                                    </a>
+                                </div>
+                                <div class="col-sm-6 col-md-4">
+                                    <a asp-controller="Messaging" asp-action="Index" class="btn btn-glass w-100 py-3">
+                                        <i class="bi bi-chat-dots d-block fs-4 mb-2"></i>
+                                        Messages
+                                    </a>
+                                </div>
+                                <div class="col-sm-6 col-md-4">
+                                    <a asp-controller="Account" asp-action="Profile" class="btn btn-glass w-100 py-3">
+                                        <i class="bi bi-person-gear d-block fs-4 mb-2"></i>
+                                        Profile Settings
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                
+                <!-- Recent Bookings -->
+                <div class="card" data-animate="fade-in-up">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h5 class="mb-0"><i class="bi bi-clock-history me-2 text-primary"></i>Recent Bookings</h5>
+                            <a href="#" class="text-primary text-decoration-none small">View All</a>
+                        </div>
+                        
+                        <!-- Empty State -->
+                        <div class="empty-state py-4">
+                            <div class="empty-state-icon" style="width: 60px; height: 60px; font-size: 1.5rem;">
+                                <i class="bi bi-calendar-x"></i>
+                            </div>
+                            <h6 class="empty-state-title">No Bookings Yet</h6>
+                            <p class="empty-state-text small">
+                                @if (isProvider)
+                                {
+                                    <span>When customers book your services, they'll appear here.</span>
+                                }
+                                else
+                                {
+                                    <span>Start exploring services and book your first appointment!</span>
+                                }
+                            </p>
+                            @if (!isProvider)
+                            {
+                                <a asp-controller="Search" asp-action="Index" class="btn btn-primary btn-sm">
+                                    <i class="bi bi-search me-2"></i>Find Services
+                                </a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+                <!-- Messages Preview -->
+                <div class="card mb-4" data-animate="fade-in-up">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h5 class="mb-0"><i class="bi bi-chat-dots me-2 text-primary"></i>Messages</h5>
+                            <a asp-controller="Messaging" asp-action="Index" class="text-primary text-decoration-none small">View All</a>
+                        </div>
+                        
+                        <div class="text-center py-3">
+                            <i class="bi bi-chat-square-text fs-1 text-muted mb-2 d-block"></i>
+                            <p class="text-muted small mb-0">No new messages</p>
+                        </div>
+                    </div>
+                </div>
+                
+                @if (isProvider)
+                {
+                    <!-- Provider Tips -->
+                    <div class="card card-glass" data-animate="fade-in-up">
+                        <div class="card-body">
+                            <h5 class="mb-3"><i class="bi bi-lightbulb me-2 text-warning"></i>Pro Tips</h5>
+                            <ul class="list-unstyled mb-0">
+                                <li class="mb-2 d-flex align-items-start">
+                                    <i class="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                                    <span class="small">Complete your profile to attract more customers</span>
+                                </li>
+                                <li class="mb-2 d-flex align-items-start">
+                                    <i class="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                                    <span class="small">Respond to inquiries quickly for better ratings</span>
+                                </li>
+                                <li class="d-flex align-items-start">
+                                    <i class="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                                    <span class="small">Keep your availability calendar updated</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <!-- Customer Help -->
+                    <div class="card card-glass" data-animate="fade-in-up">
+                        <div class="card-body">
+                            <h5 class="mb-3"><i class="bi bi-question-circle me-2 text-primary"></i>Need Help?</h5>
+                            <p class="small text-secondary mb-3">
+                                Have questions about booking or using our platform?
+                            </p>
+                            <a href="#" class="btn btn-outline-primary btn-sm w-100">
+                                <i class="bi bi-headset me-2"></i>Contact Support
+                            </a>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</section>

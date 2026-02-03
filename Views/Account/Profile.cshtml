@@ -1,0 +1,118 @@
+@model LocalServicesBooking.Models.ViewModels.UserProfileViewModel
+
+@{
+    ViewData["Title"] = "My Profile";
+}
+
+<section class="py-5" style="background: var(--bg-primary); min-height: calc(100vh - 180px);">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card animate-fade-in-up">
+                    <div class="card-body p-4 p-md-5">
+                        <!-- Profile Header -->
+                        <div class="text-center mb-4 pb-4" style="border-bottom: 1px solid var(--border-color);">
+                            <div class="position-relative d-inline-block mb-3">
+                                @if (!string.IsNullOrEmpty(Model.ProfileImageUrl))
+                                {
+                                    <img src="@Model.ProfileImageUrl" alt="Profile" class="rounded-circle" 
+                                         style="width: 120px; height: 120px; object-fit: cover; border: 4px solid var(--primary);">
+                                }
+                                else
+                                {
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto" 
+                                         style="width: 120px; height: 120px; background: var(--gradient-primary); color: white; font-size: 2.5rem; font-weight: 600; border: 4px solid rgba(255,255,255,0.2);">
+                                        @(Model.FirstName?.FirstOrDefault())@(Model.LastName?.FirstOrDefault())
+                                    </div>
+                                }
+                                <button class="btn btn-sm btn-primary rounded-circle position-absolute" 
+                                        style="bottom: 5px; right: 5px; width: 35px; height: 35px;" title="Change photo">
+                                    <i class="bi bi-camera"></i>
+                                </button>
+                            </div>
+                            <h3 class="mb-1">@Model.FirstName @Model.LastName</h3>
+                            <p class="text-muted mb-2">@Model.Email</p>
+                            <span class="badge" style="background: var(--gradient-primary);">
+                                <i class="bi @(Model.UserType == "Provider" ? "bi-briefcase" : "bi-person") me-1"></i>
+                                @Model.UserType
+                            </span>
+                        </div>
+                        
+                        @if (TempData["SuccessMessage"] != null)
+                        {
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                <i class="bi bi-check-circle me-2"></i>@TempData["SuccessMessage"]
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        }
+                        
+                        <form asp-action="Profile" method="post" data-validate>
+                            <h5 class="mb-3 d-flex align-items-center">
+                                <i class="bi bi-person me-2 text-primary"></i> Personal Information
+                            </h5>
+                            
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-6">
+                                    <label asp-for="FirstName" class="form-label">First Name</label>
+                                    <input asp-for="FirstName" class="form-control" />
+                                    <span asp-validation-for="FirstName" class="text-danger small"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <label asp-for="LastName" class="form-label">Last Name</label>
+                                    <input asp-for="LastName" class="form-control" />
+                                    <span asp-validation-for="LastName" class="text-danger small"></span>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label asp-for="PhoneNumber" class="form-label">Phone Number</label>
+                                <div class="position-relative">
+                                    <input asp-for="PhoneNumber" class="form-control" placeholder="+1 (555) 123-4567" style="padding-left: 2.5rem;" />
+                                    <i class="bi bi-telephone position-absolute" style="left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+                                </div>
+                                <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                            </div>
+                            
+                            <h5 class="mb-3 d-flex align-items-center">
+                                <i class="bi bi-image me-2 text-primary"></i> Profile Photo
+                            </h5>
+                            <div class="mb-4">
+                                <label asp-for="ProfileImageUrl" class="form-label">Profile Image URL</label>
+                                <div class="position-relative">
+                                    <input asp-for="ProfileImageUrl" class="form-control" placeholder="https://example.com/your-photo.jpg" style="padding-left: 2.5rem;" />
+                                    <i class="bi bi-link-45deg position-absolute" style="left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+                                </div>
+                                <span asp-validation-for="ProfileImageUrl" class="text-danger small"></span>
+                                <div class="form-text">Paste a direct link to your profile photo.</div>
+                            </div>
+                            
+                            <div class="d-flex gap-3 flex-wrap">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="bi bi-check-circle me-2"></i> Save Changes
+                                </button>
+                                <a asp-controller="Dashboard" asp-action="Index" class="btn btn-outline-secondary btn-lg">
+                                    <i class="bi bi-arrow-left me-2"></i> Back to Dashboard
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Danger Zone -->
+                <div class="card mt-4 border-danger" style="border-color: var(--error) !important;">
+                    <div class="card-body p-4">
+                        <h5 class="text-danger mb-3"><i class="bi bi-exclamation-triangle me-2"></i>Danger Zone</h5>
+                        <p class="text-muted small mb-3">Once you delete your account, there is no going back. Please be certain.</p>
+                        <button class="btn btn-outline-danger btn-sm" disabled>
+                            <i class="bi bi-trash me-2"></i> Delete Account
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

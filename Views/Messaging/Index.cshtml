@@ -1,0 +1,158 @@
+@using Microsoft.AspNetCore.Identity
+@using LocalServicesBooking.Models.Entities
+@inject UserManager<User> UserManager
+
+@{
+    ViewData["Title"] = "Messages";
+    var user = await UserManager.GetUserAsync(User);
+}
+
+<section class="py-4" style="background: var(--bg-primary); min-height: calc(100vh - 180px);">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="mb-0"><i class="bi bi-chat-dots me-2 text-gradient"></i>Messages</h2>
+            <button class="btn btn-primary d-lg-none" id="toggleContacts">
+                <i class="bi bi-people"></i>
+            </button>
+        </div>
+        
+        <div class="chat-container" data-animate="scale-in">
+            <!-- Chat Sidebar -->
+            <div class="chat-sidebar" id="chatSidebar">
+                <div class="p-3" style="border-bottom: 1px solid var(--border-color);">
+                    <div class="position-relative">
+                        <i class="bi bi-search position-absolute" style="left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+                        <input type="text" class="form-control form-control-sm" placeholder="Search conversations..." style="padding-left: 2.5rem;">
+                    </div>
+                </div>
+                
+                <div class="chat-contacts">
+                    <!-- Empty State -->
+                    <div class="text-center py-5 px-3">
+                        <i class="bi bi-chat-square-text fs-1 text-muted mb-3 d-block"></i>
+                        <h6 class="text-secondary">No Conversations</h6>
+                        <p class="text-muted small mb-0">
+                            Start a conversation by booking a service or receiving a booking request.
+                        </p>
+                    </div>
+                    
+                    <!-- Sample Contact (hidden for now, uncomment when data exists) -->
+                    <!--
+                    <div class="chat-contact active">
+                        <div class="chat-avatar-placeholder">JD</div>
+                        <div class="flex-grow-1 overflow-hidden">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <strong class="small">John Doe</strong>
+                                <small class="text-muted">2m ago</small>
+                            </div>
+                            <p class="mb-0 text-muted small text-truncate">Hey, I wanted to ask about...</p>
+                        </div>
+                    </div>
+                    -->
+                </div>
+            </div>
+            
+            <!-- Chat Main Area -->
+            <div class="chat-main">
+                <!-- Empty Chat State -->
+                <div class="d-flex flex-column align-items-center justify-content-center h-100 text-center p-4">
+                    <div class="mb-4" style="width: 120px; height: 120px;">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center w-100 h-100" 
+                             style="background: var(--glass-bg); border: 1px solid var(--glass-border);">
+                            <i class="bi bi-chat-dots fs-1 text-muted"></i>
+                        </div>
+                    </div>
+                    <h4 class="mb-2">Select a Conversation</h4>
+                    <p class="text-muted mb-4" style="max-width: 300px;">
+                        Choose a conversation from the sidebar to start messaging, or wait for someone to contact you.
+                    </p>
+                    <a asp-controller="Search" asp-action="Index" class="btn btn-outline-primary">
+                        <i class="bi bi-search me-2"></i>Find Service Providers
+                    </a>
+                </div>
+                
+                <!-- Active Chat (hidden, shown when conversation selected) -->
+                <!--
+                <div class="chat-header">
+                    <div class="chat-avatar-placeholder">JD</div>
+                    <div>
+                        <strong>John Doe</strong>
+                        <small class="d-block text-success"><i class="bi bi-circle-fill me-1" style="font-size: 0.5rem;"></i>Online</small>
+                    </div>
+                </div>
+                
+                <div class="chat-messages">
+                    <div class="chat-message received">
+                        Hello! I'm interested in your cleaning services.
+                        <small class="d-block text-muted mt-1">10:30 AM</small>
+                    </div>
+                    <div class="chat-message sent">
+                        Hi! Thanks for reaching out. I'd be happy to help. What area do you need cleaned?
+                        <small class="d-block mt-1" style="opacity: 0.7;">10:32 AM</small>
+                    </div>
+                </div>
+                
+                <div class="chat-input-container">
+                    <input type="text" class="form-control chat-input" placeholder="Type a message..." />
+                    <button class="btn btn-primary">
+                        <i class="bi bi-send"></i>
+                    </button>
+                </div>
+                -->
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .chat-contacts {
+        max-height: calc(100vh - 350px);
+        overflow-y: auto;
+    }
+    
+    @@media (max-width: 992px) {
+        #chatSidebar {
+            position: fixed;
+            top: 80px;
+            left: -100%;
+            width: 300px;
+            height: calc(100vh - 80px);
+            z-index: 1000;
+            transition: left 0.3s ease;
+            background: var(--bg-secondary);
+        }
+        
+        #chatSidebar.show {
+            left: 0;
+        }
+        
+        .chat-container {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+@section Scripts {
+    <script src="~/lib/microsoft/signalr/dist/browser/signalr.min.js"></script>
+    <script>
+        // SignalR connection setup (for future real-time messaging)
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile sidebar toggle
+            const toggleBtn = document.getElementById('toggleContacts');
+            const sidebar = document.getElementById('chatSidebar');
+            
+            if (toggleBtn && sidebar) {
+                toggleBtn.addEventListener('click', function() {
+                    sidebar.classList.toggle('show');
+                });
+            }
+            
+            // Future: SignalR connection
+            // const connection = new signalR.HubConnectionBuilder()
+            //     .withUrl("/chatHub")
+            //     .build();
+            // 
+            // connection.start().catch(err => console.error(err));
+        });
+    </script>
+}

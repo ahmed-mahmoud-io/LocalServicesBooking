@@ -1,0 +1,122 @@
+@model LocalServicesBooking.Models.ViewModels.VerifyEmailViewModel
+
+@{
+    ViewData["Title"] = "Verify Email";
+    Layout = "_Layout";
+}
+
+<div class="auth-container">
+    <div class="auth-card animate-scale-in text-center">
+        <div class="mb-4">
+            <div class="d-inline-flex align-items-center justify-content-center rounded-circle animate-pulse" 
+                 style="width: 80px; height: 80px; background: var(--gradient-primary);">
+                <i class="bi bi-envelope-check fs-1 text-white"></i>
+            </div>
+        </div>
+        
+        <h1 class="auth-title">Verify Your Email</h1>
+        <p class="auth-subtitle">
+            We've sent a verification code to<br />
+            <strong class="text-primary">@Model.Email</strong>
+        </p>
+        
+        <form asp-action="VerifyEmail" method="post" class="mt-4">
+            <input type="hidden" asp-for="Email" />
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-3" role="alert"></div>
+            
+            <div class="mb-4">
+                <label asp-for="Code" class="form-label">Enter Verification Code</label>
+                <div class="otp-input-container d-flex gap-2 justify-content-center">
+                    <input type="text" maxlength="1" class="form-control text-center fs-4 fw-bold" style="width: 50px; height: 60px;" />
+                    <input type="text" maxlength="1" class="form-control text-center fs-4 fw-bold" style="width: 50px; height: 60px;" />
+                    <input type="text" maxlength="1" class="form-control text-center fs-4 fw-bold" style="width: 50px; height: 60px;" />
+                    <input type="text" maxlength="1" class="form-control text-center fs-4 fw-bold" style="width: 50px; height: 60px;" />
+                    <input type="text" maxlength="1" class="form-control text-center fs-4 fw-bold" style="width: 50px; height: 60px;" />
+                    <input type="text" maxlength="1" class="form-control text-center fs-4 fw-bold" style="width: 50px; height: 60px;" />
+                </div>
+                <input type="hidden" asp-for="Code" id="fullCode" />
+                <span asp-validation-for="Code" class="text-danger small"></span>
+            </div>
+            
+            <button type="submit" class="btn btn-primary w-100 btn-lg mb-3">
+                <i class="bi bi-check-circle me-2"></i> Verify Email
+            </button>
+        </form>
+        
+        <p class="text-secondary mb-3">
+            Didn't receive the code?
+        </p>
+        <button class="btn btn-outline-primary" id="resendBtn" disabled>
+            <i class="bi bi-arrow-clockwise me-2"></i> Resend Code (<span id="countdown">60</span>s)
+        </button>
+        
+        <div class="mt-4 pt-4" style="border-top: 1px solid var(--border-color);">
+            <a asp-controller="Account" asp-action="Register" class="text-secondary text-decoration-none">
+                <i class="bi bi-arrow-left me-1"></i> Back to Registration
+            </a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // OTP Input handling - combine into hidden field
+            const otpInputs = document.querySelectorAll('.otp-input-container input:not([type="hidden"])');
+            const fullCodeInput = document.getElementById('fullCode');
+            
+            function updateFullCode() {
+                let code = '';
+                otpInputs.forEach(input => {
+                    code += input.value;
+                });
+                fullCodeInput.value = code;
+            }
+            
+            otpInputs.forEach((input, index) => {
+                input.addEventListener('input', function() {
+                    if (this.value.length === 1 && index < otpInputs.length - 1) {
+                        otpInputs[index + 1].focus();
+                    }
+                    updateFullCode();
+                });
+                
+                input.addEventListener('keydown', function(e) {
+                    if (e.key === 'Backspace' && !this.value && index > 0) {
+                        otpInputs[index - 1].focus();
+                    }
+                });
+                
+                input.addEventListener('paste', function(e) {
+                    e.preventDefault();
+                    const paste = (e.clipboardData || window.clipboardData).getData('text');
+                    const chars = paste.split('').slice(0, 6);
+                    chars.forEach((char, i) => {
+                        if (otpInputs[i]) otpInputs[i].value = char;
+                    });
+                    updateFullCode();
+                    if (chars.length === 6) {
+                        otpInputs[5].focus();
+                    }
+                });
+            });
+            
+            // Countdown timer
+            let timeLeft = 60;
+            const countdownEl = document.getElementById('countdown');
+            const resendBtn = document.getElementById('resendBtn');
+            
+            const timer = setInterval(() => {
+                timeLeft--;
+                countdownEl.textContent = timeLeft;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    resendBtn.disabled = false;
+                    resendBtn.innerHTML = '<i class="bi bi-arrow-clockwise me-2"></i> Resend Code';
+                }
+            }, 1000);
+        });
+    </script>
+}

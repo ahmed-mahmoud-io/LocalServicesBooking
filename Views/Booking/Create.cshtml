@@ -1,0 +1,134 @@
+@model LocalServicesBooking.Models.ViewModels.CreateBookingViewModel
+
+@{
+    ViewData["Title"] = "Book Service";
+}
+
+<section class="py-5" style="background: var(--gradient-hero); min-height: 100vh;">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card card-glass animate-scale-in">
+                    <div class="card-body p-4 p-md-5">
+                        <div class="text-center mb-4">
+                            <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3" 
+                                 style="width: 60px; height: 60px; background: var(--gradient-primary);">
+                                <i class="bi bi-calendar-check fs-4 text-white"></i>
+                            </div>
+                            <h2 class="mb-2">Complete Your Booking</h2>
+                            <p class="text-secondary">Fill in the details below to book this service</p>
+                        </div>
+                        
+                        <!-- Service Summary -->
+                        <div class="glass p-4 rounded-xl mb-4">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="rounded-circle d-flex align-items-center justify-content-center" 
+                                     style="width: 50px; height: 50px; background: var(--gradient-primary); color: white;">
+                                    <i class="bi bi-briefcase fs-5"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h5 class="mb-1">@Model.ServiceName</h5>
+                                    <p class="text-secondary mb-0 small">by <strong>@Model.ProviderName</strong></p>
+                                </div>
+                                <div class="text-end">
+                                    <div class="fs-4 fw-bold text-gradient">$@Model.BasePrice</div>
+                                    <small class="text-muted">per @Model.PriceUnit</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <form asp-action="Create" method="post" data-validate>
+                            <input type="hidden" asp-for="ServiceId" />
+                            <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-4" role="alert"></div>
+                            
+                            <!-- Date & Time -->
+                            <h5 class="mb-3 d-flex align-items-center">
+                                <i class="bi bi-clock me-2 text-primary"></i> When do you need it?
+                            </h5>
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-6">
+                                    <label asp-for="BookingDate" class="form-label">Preferred Date</label>
+                                    <div class="position-relative">
+                                        <input asp-for="BookingDate" type="date" class="form-control" style="padding-left: 2.5rem;" />
+                                        <i class="bi bi-calendar3 position-absolute" style="left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+                                    </div>
+                                    <span asp-validation-for="BookingDate" class="text-danger small"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <label asp-for="BookingTime" class="form-label">Preferred Time</label>
+                                    <div class="position-relative">
+                                        <input asp-for="BookingTime" type="time" class="form-control" style="padding-left: 2.5rem;" />
+                                        <i class="bi bi-clock position-absolute" style="left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+                                    </div>
+                                    <span asp-validation-for="BookingTime" class="text-danger small"></span>
+                                </div>
+                            </div>
+                            
+                            <!-- Location -->
+                            <h5 class="mb-3 d-flex align-items-center">
+                                <i class="bi bi-geo-alt me-2 text-primary"></i> Service Location
+                            </h5>
+                            <div class="mb-3">
+                                <label asp-for="LocationAddress" class="form-label">Street Address</label>
+                                <input asp-for="LocationAddress" class="form-control" placeholder="123 Main Street" />
+                                <span asp-validation-for="LocationAddress" class="text-danger small"></span>
+                            </div>
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-6">
+                                    <label asp-for="LocationCity" class="form-label">City</label>
+                                    <input asp-for="LocationCity" class="form-control" placeholder="New York" />
+                                    <span asp-validation-for="LocationCity" class="text-danger small"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <label asp-for="LocationZipCode" class="form-label">ZIP Code</label>
+                                    <input asp-for="LocationZipCode" class="form-control" placeholder="10001" />
+                                    <span asp-validation-for="LocationZipCode" class="text-danger small"></span>
+                                </div>
+                            </div>
+                            
+                            <!-- Notes -->
+                            <h5 class="mb-3 d-flex align-items-center">
+                                <i class="bi bi-chat-text me-2 text-primary"></i> Additional Details
+                            </h5>
+                            <div class="mb-4">
+                                <label asp-for="Notes" class="form-label">Notes for the Provider</label>
+                                <textarea asp-for="Notes" class="form-control" rows="4" placeholder="Any special instructions, parking info, or details about the job?"></textarea>
+                                <span asp-validation-for="Notes" class="text-danger small"></span>
+                            </div>
+                            
+                            <!-- Price Summary -->
+                            <div class="glass p-4 rounded-xl mb-4">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="text-secondary">Service Fee</span>
+                                    <span>$@Model.BasePrice</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="text-secondary">Platform Fee</span>
+                                    <span>$0.00</span>
+                                </div>
+                                <hr style="border-color: var(--border-color);">
+                                <div class="d-flex justify-content-between fs-5 fw-bold">
+                                    <span>Estimated Total</span>
+                                    <span class="text-gradient">$@Model.BasePrice</span>
+                                </div>
+                            </div>
+                            
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="bi bi-check-circle me-2"></i> Confirm Booking
+                                </button>
+                                <a asp-controller="Search" asp-action="Index" class="btn btn-outline-secondary">
+                                    <i class="bi bi-arrow-left me-2"></i> Back to Search
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

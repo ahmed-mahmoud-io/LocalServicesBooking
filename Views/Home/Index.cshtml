@@ -1,0 +1,287 @@
+@{
+    ViewData["Title"] = "Home";
+    var categories = ViewBag.Categories as List<LocalServicesBooking.Models.Entities.ServiceCategory> ?? new List<LocalServicesBooking.Models.Entities.ServiceCategory>();
+}
+
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-content">
+        <h1 class="hero-title animate-fade-in-up">
+            Find Trusted <span class="text-gradient">Local Services</span><br />
+            Near You
+        </h1>
+        <p class="hero-subtitle animate-fade-in-up delay-100">
+            Connect with verified service providers in your area. From home repairs to personal services, 
+            book appointments easily and get the job done right.
+        </p>
+        <div class="hero-cta animate-fade-in-up delay-200">
+            <a asp-controller="Search" asp-action="Index" class="btn btn-primary btn-lg">
+                <i class="bi bi-search me-2"></i> Explore Services
+            </a>
+            <a asp-controller="Account" asp-action="Register" class="btn btn-glass btn-lg">
+                <i class="bi bi-person-plus me-2"></i> Become a Provider
+            </a>
+        </div>
+        
+        <!-- Quick Search -->
+        <div class="mt-5 animate-fade-in-up delay-300">
+            <form asp-controller="Search" asp-action="Index" method="get" class="search-box mx-auto" style="max-width: 700px;">
+                <div class="search-input-group position-relative flex-grow-1">
+                    <i class="bi bi-search input-icon"></i>
+                    <input type="text" name="query" class="form-control" placeholder="What service do you need?" style="padding-left: 2.5rem;">
+                </div>
+                <div class="search-input-group position-relative flex-grow-1">
+                    <i class="bi bi-geo-alt input-icon"></i>
+                    <input type="text" name="location" class="form-control" placeholder="Your location" style="padding-left: 2.5rem;">
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-arrow-right"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-6 col-md-3">
+                <div class="stat-item" data-animate="fade-in-up">
+                    <div class="stat-number" data-counter="2500" data-suffix="+">0</div>
+                    <div class="stat-label">Service Providers</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-item" data-animate="fade-in-up">
+                    <div class="stat-number" data-counter="15000" data-suffix="+">0</div>
+                    <div class="stat-label">Happy Customers</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-item" data-animate="fade-in-up">
+                    <div class="stat-number" data-counter="50" data-suffix="+">0</div>
+                    <div class="stat-label">Service Categories</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-item" data-animate="fade-in-up">
+                    <div class="stat-number" data-counter="98" data-suffix="%">0</div>
+                    <div class="stat-label">Satisfaction Rate</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Service Categories -->
+<section class="py-5" style="background: var(--bg-primary);">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="mb-3" data-animate="fade-in-up">Popular <span class="text-gradient">Service Categories</span></h2>
+            <p class="text-secondary" data-animate="fade-in-up">Browse through our most popular service categories</p>
+        </div>
+        
+        <div class="row g-4">
+            @if (categories.Any())
+            {
+                @foreach (var category in categories)
+                {
+                    <div class="col-md-6 col-lg-4" data-animate="fade-in-up">
+                        <a asp-controller="Search" asp-action="Index" asp-route-query="@category.CategoryName" class="text-decoration-none">
+                            <div class="service-card">
+                                <div class="service-icon">
+                                    <i class="bi @(category.IconName ?? GetCategoryIcon(category.CategoryName))"></i>
+                                </div>
+                                <h4>@category.CategoryName</h4>
+                                <p>Professional services tailored to your needs</p>
+                            </div>
+                        </a>
+                    </div>
+                }
+            }
+            else
+            {
+                <!-- Default categories for demo -->
+                <div class="col-md-6 col-lg-4" data-animate="fade-in-up">
+                    <div class="service-card">
+                        <div class="service-icon">
+                            <i class="bi bi-house-door"></i>
+                        </div>
+                        <h4>Home Cleaning</h4>
+                        <p>Professional cleaning services for your home</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4" data-animate="fade-in-up">
+                    <div class="service-card">
+                        <div class="service-icon">
+                            <i class="bi bi-droplet"></i>
+                        </div>
+                        <h4>Plumbing</h4>
+                        <p>Expert plumbing repairs and installations</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4" data-animate="fade-in-up">
+                    <div class="service-card">
+                        <div class="service-icon">
+                            <i class="bi bi-lightning"></i>
+                        </div>
+                        <h4>Electrical</h4>
+                        <p>Certified electricians for all your needs</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4" data-animate="fade-in-up">
+                    <div class="service-card">
+                        <div class="service-icon">
+                            <i class="bi bi-tools"></i>
+                        </div>
+                        <h4>Handyman</h4>
+                        <p>General repairs and maintenance services</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4" data-animate="fade-in-up">
+                    <div class="service-card">
+                        <div class="service-icon">
+                            <i class="bi bi-flower1"></i>
+                        </div>
+                        <h4>Gardening</h4>
+                        <p>Keep your outdoor spaces beautiful</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4" data-animate="fade-in-up">
+                    <div class="service-card">
+                        <div class="service-icon">
+                            <i class="bi bi-car-front"></i>
+                        </div>
+                        <h4>Auto Services</h4>
+                        <p>Mobile mechanics and car care services</p>
+                    </div>
+                </div>
+            }
+        </div>
+        
+        <div class="text-center mt-5" data-animate="fade-in-up">
+            <a asp-controller="Search" asp-action="Index" class="btn btn-outline-primary btn-lg">
+                View All Categories <i class="bi bi-arrow-right ms-2"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works -->
+<section class="py-5" style="background: var(--bg-secondary);">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="mb-3" data-animate="fade-in-up">How It <span class="text-gradient">Works</span></h2>
+            <p class="text-secondary" data-animate="fade-in-up">Book a service in just 3 simple steps</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-4" data-animate="fade-in-up">
+                <div class="card card-glass text-center p-4 h-100">
+                    <div class="mb-3">
+                        <span class="d-inline-flex align-items-center justify-content-center rounded-circle" 
+                              style="width: 60px; height: 60px; background: var(--gradient-primary); color: white; font-size: 1.5rem; font-weight: 700;">
+                            1
+                        </span>
+                    </div>
+                    <h4>Search Services</h4>
+                    <p class="text-secondary mb-0">
+                        Browse our wide range of services or search for exactly what you need.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4" data-animate="fade-in-up" style="animation-delay: 0.1s;">
+                <div class="card card-glass text-center p-4 h-100">
+                    <div class="mb-3">
+                        <span class="d-inline-flex align-items-center justify-content-center rounded-circle" 
+                              style="width: 60px; height: 60px; background: var(--gradient-primary); color: white; font-size: 1.5rem; font-weight: 700;">
+                            2
+                        </span>
+                    </div>
+                    <h4>Choose a Provider</h4>
+                    <p class="text-secondary mb-0">
+                        Compare providers based on ratings, reviews, and pricing.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4" data-animate="fade-in-up" style="animation-delay: 0.2s;">
+                <div class="card card-glass text-center p-4 h-100">
+                    <div class="mb-3">
+                        <span class="d-inline-flex align-items-center justify-content-center rounded-circle" 
+                              style="width: 60px; height: 60px; background: var(--gradient-primary); color: white; font-size: 1.5rem; font-weight: 700;">
+                            3
+                        </span>
+                    </div>
+                    <h4>Book & Relax</h4>
+                    <p class="text-secondary mb-0">
+                        Schedule your appointment and let the professional handle the rest.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-5 position-relative overflow-hidden" style="background: var(--gradient-hero);">
+    <div class="container position-relative z-1">
+        <div class="row align-items-center">
+            <div class="col-lg-8 mb-4 mb-lg-0">
+                <h2 class="mb-3" data-animate="slide-in-left">Ready to Get Started?</h2>
+                <p class="text-secondary mb-0" data-animate="slide-in-left" style="animation-delay: 0.1s;">
+                    Join thousands of satisfied customers who trust LocalServicesBooking for all their service needs.
+                </p>
+            </div>
+            <div class="col-lg-4 text-lg-end" data-animate="fade-in-up">
+                <a asp-controller="Account" asp-action="Register" class="btn btn-primary btn-lg">
+                    Get Started Free <i class="bi bi-arrow-right ms-2"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Provider CTA -->
+<section class="py-5" style="background: var(--bg-primary);">
+    <div class="container">
+        <div class="card card-glass p-5" data-animate="scale-in">
+            <div class="row align-items-center">
+                <div class="col-lg-8 mb-4 mb-lg-0">
+                    <h3 class="mb-3">Are You a Service Provider?</h3>
+                    <p class="text-secondary mb-0">
+                        Join our platform to reach more customers, manage your bookings effortlessly, 
+                        and grow your business. Free to get started!
+                    </p>
+                </div>
+                <div class="col-lg-4 text-lg-end">
+                    <a asp-controller="Account" asp-action="Register" class="btn btn-primary btn-lg">
+                        <i class="bi bi-briefcase me-2"></i> Become a Provider
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@functions {
+    string GetCategoryIcon(string categoryName)
+    {
+        return categoryName?.ToLower() switch
+        {
+            "cleaning" or "home cleaning" => "bi-house-door",
+            "plumbing" => "bi-droplet",
+            "electrical" => "bi-lightning",
+            "handyman" => "bi-tools",
+            "gardening" or "landscaping" => "bi-flower1",
+            "auto" or "auto services" or "automotive" => "bi-car-front",
+            "moving" => "bi-truck",
+            "painting" => "bi-paint-bucket",
+            "hvac" => "bi-thermometer-half",
+            "pest control" => "bi-bug",
+            "carpentry" => "bi-hammer",
+            "roofing" => "bi-house",
+            _ => "bi-gear"
+        };
+    }
+}

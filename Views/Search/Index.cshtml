@@ -1,0 +1,269 @@
+@model LocalServicesBooking.Models.ViewModels.SearchViewModel
+
+@{
+    ViewData["Title"] = "Explore Services";
+}
+
+<!-- Search Hero -->
+<section class="search-hero">
+    <div class="container">
+        <div class="text-center mb-4">
+            <h1 class="mb-3" data-animate="fade-in-up">Find <span class="text-gradient">Service Providers</span></h1>
+            <p class="text-secondary" data-animate="fade-in-up">Search from thousands of verified service providers in your area</p>
+        </div>
+        
+        <form asp-action="Index" method="get" class="search-box mx-auto" style="max-width: 800px;" data-animate="fade-in-up">
+            <div class="search-input-group position-relative flex-grow-1">
+                <i class="bi bi-search input-icon"></i>
+                <input type="text" name="query" value="@Model?.ServiceQuery" class="form-control" placeholder="What service do you need?" style="padding-left: 2.5rem;">
+            </div>
+            <div class="search-input-group position-relative flex-grow-1">
+                <i class="bi bi-geo-alt input-icon"></i>
+                <input type="text" name="location" value="@Model?.Location" class="form-control" placeholder="Your location" style="padding-left: 2.5rem;">
+            </div>
+            <button type="submit" class="btn btn-primary px-4">
+                <i class="bi bi-search me-2 d-none d-md-inline"></i> Search
+            </button>
+        </form>
+    </div>
+</section>
+
+<section class="py-5" style="background: var(--bg-primary);">
+    <div class="container">
+        <div class="row g-4">
+            <!-- Filters Sidebar -->
+            <div class="col-lg-3">
+                <div class="filter-sidebar">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="mb-0"><i class="bi bi-funnel me-2"></i>Filters</h5>
+                        <a href="@Url.Action("Index")" class="text-primary small text-decoration-none">Clear all</a>
+                    </div>
+                    
+                    <form asp-action="Index" method="get" id="filterForm">
+                        <input type="hidden" name="query" value="@Model?.ServiceQuery" />
+                        <input type="hidden" name="location" value="@Model?.Location" />
+                        
+                        <!-- Price Range -->
+                        <div class="filter-section">
+                            <div class="filter-title">
+                                Price Range
+                                <i class="bi bi-chevron-down"></i>
+                            </div>
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <input type="number" name="minPrice" value="@Model?.MinPrice" class="form-control form-control-sm" placeholder="Min $" />
+                                </div>
+                                <div class="col-6">
+                                    <input type="number" name="maxPrice" value="@Model?.MaxPrice" class="form-control form-control-sm" placeholder="Max $" />
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Rating -->
+                        <div class="filter-section">
+                            <div class="filter-title">
+                                Minimum Rating
+                                <i class="bi bi-chevron-down"></i>
+                            </div>
+                            <div class="d-grid gap-2" style="grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));">
+                                @for (int i = 5; i >= 1; i--)
+                                {
+                                    <button type="button" class="btn btn-sm @(Model?.MinRating == i ? "btn-primary" : "btn-outline-primary")" 
+                                            onclick="document.getElementById('minRating').value = @i; document.getElementById('filterForm').submit();">
+                                        @i <i class="bi bi-star-fill"></i>
+                                    </button>
+                                }
+                            </div>
+                            <input type="hidden" name="minRating" id="minRating" value="@Model?.MinRating" />
+                        </div>
+                        
+                        <!-- Sort By -->
+                        <div class="filter-section">
+                            <div class="filter-title">Sort By</div>
+                            <select name="sortBy" class="form-select form-select-sm" onchange="document.getElementById('filterForm').submit();">
+                                <option value="">Relevance</option>
+                                <option value="rating" selected="@(Model?.SortBy == "rating")">Highest Rated</option>
+                                <option value="price_low" selected="@(Model?.SortBy == "price_low")">Price: Low to High</option>
+                                <option value="price_high" selected="@(Model?.SortBy == "price_high")">Price: High to Low</option>
+                            </select>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-funnel me-2"></i>Apply Filters
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Results -->
+            <div class="col-lg-9">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h5 class="mb-1">
+                            @if (!string.IsNullOrEmpty(Model?.ServiceQuery))
+                            {
+                                <span>Results for "@Model.ServiceQuery"</span>
+                            }
+                            else
+                            {
+                                <span>All Providers</span>
+                            }
+                        </h5>
+                        <p class="text-muted mb-0 small">@(Model?.TotalResults ?? 0) providers found</p>
+                    </div>
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-sm btn-outline-primary active" data-view-toggle="resultsGrid" data-view="grid">
+                            <i class="bi bi-grid-3x3-gap"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-primary" data-view-toggle="resultsGrid" data-view="list">
+                            <i class="bi bi-list-ul"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="resultsGrid" data-view="grid">
+                    @if (Model?.Results != null && Model.Results.Any())
+                    {
+                        <div class="row g-4">
+                            @foreach (var provider in Model.Results)
+                            {
+                                <div class="col-md-6 col-xl-4" data-animate="fade-in-up">
+                                    <div class="provider-card h-100">
+                                        <div class="provider-info">
+                                            <div class="d-flex align-items-start gap-3 mb-3">
+                                                @if (!string.IsNullOrEmpty(provider.ProfileImageUrl))
+                                                {
+                                                    <img src="@provider.ProfileImageUrl" alt="@provider.BusinessName" class="rounded-circle" style="width: 60px; height: 60px; object-fit: cover;">
+                                                }
+                                                else
+                                                {
+                                                    <div class="rounded-circle d-flex align-items-center justify-content-center" 
+                                                         style="width: 60px; height: 60px; background: var(--gradient-primary); color: white; font-size: 1.25rem; font-weight: 600;">
+                                                        @(provider.BusinessName?.FirstOrDefault())
+                                                    </div>
+                                                }
+                                                <div>
+                                                    <h5 class="provider-name mb-1">@provider.BusinessName</h5>
+                                                    <p class="provider-service mb-0">@provider.ServiceName</p>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="provider-rating mb-3">
+                                                @for (int i = 1; i <= 5; i++)
+                                                {
+                                                    <i class="bi @(i <= provider.Rating ? "bi-star-fill" : "bi-star")"></i>
+                                                }
+                                                <span class="ms-1 text-secondary">(@provider.ReviewCount reviews)</span>
+                                            </div>
+                                            
+
+                                            
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div class="provider-price">
+                                                    $@provider.StartingPrice <span>/ @provider.PriceUnit</span>
+                                                </div>
+                                                <a asp-controller="Booking" asp-action="Create" asp-route-providerId="@provider.ProviderId" 
+                                                   class="btn btn-primary btn-sm">
+                                                    Book Now
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                        
+                        <!-- Pagination -->
+                        @if (Model.TotalResults > 10)
+                        {
+                            var totalPages = (int)Math.Ceiling((double)Model.TotalResults / 10);
+                            <nav class="mt-5" aria-label="Search results pagination">
+                                <ul class="pagination justify-content-center">
+                                    <li class="page-item @(Model.CurrentPage <= 1 ? "disabled" : "")">
+                                        <a class="page-link" asp-action="Index" asp-route-query="@Model.ServiceQuery" asp-route-location="@Model.Location" 
+                                           asp-route-minPrice="@Model.MinPrice" asp-route-maxPrice="@Model.MaxPrice" asp-route-minRating="@Model.MinRating" 
+                                           asp-route-sortBy="@Model.SortBy" asp-route-page="@(Model.CurrentPage - 1)">
+                                            <i class="bi bi-chevron-left"></i>
+                                        </a>
+                                    </li>
+                                    @for (int i = 1; i <= Math.Min(totalPages, 5); i++)
+                                    {
+                                        <li class="page-item @(Model.CurrentPage == i ? "active" : "")">
+                                            <a class="page-link" asp-action="Index" asp-route-query="@Model.ServiceQuery" asp-route-location="@Model.Location" 
+                                               asp-route-minPrice="@Model.MinPrice" asp-route-maxPrice="@Model.MaxPrice" asp-route-minRating="@Model.MinRating" 
+                                               asp-route-sortBy="@Model.SortBy" asp-route-page="@i">@i</a>
+                                        </li>
+                                    }
+                                    <li class="page-item @(Model.CurrentPage >= totalPages ? "disabled" : "")">
+                                        <a class="page-link" asp-action="Index" asp-route-query="@Model.ServiceQuery" asp-route-location="@Model.Location" 
+                                           asp-route-minPrice="@Model.MinPrice" asp-route-maxPrice="@Model.MaxPrice" asp-route-minRating="@Model.MinRating" 
+                                           asp-route-sortBy="@Model.SortBy" asp-route-page="@(Model.CurrentPage + 1)">
+                                            <i class="bi bi-chevron-right"></i>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        }
+                    }
+                    else
+                    {
+                        <!-- Empty State -->
+                        <div class="empty-state">
+                            <div class="empty-state-icon">
+                                <i class="bi bi-search"></i>
+                            </div>
+                            <h4 class="empty-state-title">No Providers Found</h4>
+                            <p class="empty-state-text">
+                                We couldn't find any service providers matching your criteria. Try adjusting your filters or search terms.
+                            </p>
+                            <a asp-action="Index" class="btn btn-primary">
+                                <i class="bi bi-arrow-clockwise me-2"></i>Clear Filters
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .page-link {
+        background: var(--bg-card);
+        border-color: var(--border-color);
+        color: var(--text-primary);
+    }
+    
+    .page-link:hover {
+        background: var(--bg-tertiary);
+        border-color: var(--primary);
+        color: var(--primary);
+    }
+    
+    .page-item.active .page-link {
+        background: var(--gradient-primary);
+        border-color: var(--primary);
+    }
+    
+    .page-item.disabled .page-link {
+        background: var(--bg-secondary);
+        color: var(--text-muted);
+    }
+    
+    #resultsGrid[data-view="list"] .col-md-6 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+    
+    #resultsGrid[data-view="list"] .provider-card {
+        display: flex;
+        flex-direction: row;
+    }
+    
+    #resultsGrid[data-view="list"] .provider-info {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        gap: 1rem;
+    }
+</style>

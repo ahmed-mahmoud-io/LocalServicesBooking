@@ -1,0 +1,151 @@
+@model LocalServicesBooking.Models.ViewModels.LoginViewModel
+
+@{
+    ViewData["Title"] = "Login";
+    Layout = "_Layout";
+}
+
+<div class="auth-container">
+    <div class="auth-card animate-scale-in">
+        <div class="auth-logo">
+            LocalServices<span class="text-gradient">Booking</span>
+        </div>
+        
+        <h1 class="auth-title">Welcome Back</h1>
+        <p class="auth-subtitle">Sign in to continue to your account</p>
+        
+        <!-- Social Login -->
+        <form asp-controller="Account" asp-action="ExternalLogin" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post">
+<button type="button" id="google-login-btn" class="social-btn google">
+                <svg width="20" height="20" viewBox="0 0 24 24">
+                    <path fill="#EA4335" d="M5.26620003,9.76452941 C6.19878754,6.93863203 8.85444915,4.90909091 12,4.90909091 C13.6909091,4.90909091 15.2181818,5.50909091 16.4181818,6.49090909 L19.9090909,3 C17.7818182,1.14545455 15.0545455,0 12,0 C7.27006974,0 3.1977497,2.69829785 1.23999023,6.65002441 L5.26620003,9.76452941 Z"/>
+                    <path fill="#34A853" d="M16.0407269,18.0125889 C14.9509167,18.7163016 13.5660892,19.0909091 12,19.0909091 C8.86648613,19.0909091 6.21911939,17.076871 5.27698177,14.2678769 L1.23746264,17.3349879 C3.19279051,21.2936293 7.26500293,24 12,24 C14.9328362,24 17.7353462,22.9573905 19.834192,20.9995801 L16.0407269,18.0125889 Z"/>
+                    <path fill="#4A90E2" d="M19.834192,20.9995801 C22.0291676,18.9520994 23.4545455,15.903663 23.4545455,12 C23.4545455,11.2909091 23.3454545,10.5272727 23.1818182,9.81818182 L12,9.81818182 L12,14.4545455 L18.4363636,14.4545455 C18.1187732,16.013626 17.2662994,17.2212117 16.0407269,18.0125889 L19.834192,20.9995801 Z"/>
+                    <path fill="#FBBC05" d="M5.27698177,14.2678769 C5.03832634,13.556323 4.90909091,12.7937589 4.90909091,12 C4.90909091,11.2182781 5.03443647,10.4668121 5.26620003,9.76452941 L1.23999023,6.65002441 C0.43658717,8.26043162 0,10.0753848 0,12 C0,13.9195484 0.444780743,15.7## C1.23746264,17.3349879 L5.27698177,14.2678769 Z"/>
+                </svg>
+                Continue with Google
+            </button>
+            <button type="submit" name="provider" value="Apple" class="social-btn apple">
+                <i class="bi bi-apple fs-5"></i>
+                Continue with Apple
+            </button>
+        </form>
+        
+        <div class="auth-divider">or</div>
+        
+        <!-- Login Form -->
+        <form asp-action="Login" method="post" data-validate>
+            <input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-3" role="alert"></div>
+            
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label">Email Address</label>
+                <div class="position-relative">
+                    <input asp-for="Email" class="form-control" placeholder="you@example.com" style="padding-left: 2.5rem;" />
+                    <i class="bi bi-envelope position-absolute" style="left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+                </div>
+                <span asp-validation-for="Email" class="text-danger small"></span>
+            </div>
+            
+            <div class="mb-3">
+                <label asp-for="Password" class="form-label">Password</label>
+                <div class="password-toggle-wrapper">
+                    <input asp-for="Password" class="form-control has-password-toggle" placeholder="••••••••" style="padding-left: 2.5rem;" id="loginPassword" />
+                    <i class="bi bi-lock position-absolute" style="left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+                    <button type="button" class="password-toggle-btn" onclick="togglePassword('loginPassword', this)" aria-label="Toggle password visibility">
+                        <i class="bi bi-eye"></i>
+                    </button>
+                </div>
+                <span asp-validation-for="Password" class="text-danger small"></span>
+            </div>
+            
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="form-check">
+                    <input asp-for="RememberMe" class="form-check-input" />
+                    <label asp-for="RememberMe" class="form-check-label">Remember me</label>
+                </div>
+                <a href="#" class="text-primary text-decoration-none small">Forgot password?</a>
+            </div>
+            
+            <button type="submit" class="btn btn-primary w-100 btn-lg mb-3">
+                <i class="bi bi-box-arrow-in-right me-2"></i> Sign In
+            </button>
+        </form>
+        
+        <p class="text-center text-secondary mb-0">
+            Don't have an account? 
+            <a asp-controller="Account" asp-action="Register" class="text-primary text-decoration-none fw-medium">Create one</a>
+        </p>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        function togglePassword(inputId, btn) {
+            const input = document.getElementById(inputId);
+            const icon = btn.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('bi-eye');
+                icon.classList.add('bi-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('bi-eye-slash');
+                icon.classList.add('bi-eye');
+            }
+        }
+    </script>
+    <script type="module">
+        import { auth, GoogleAuthProvider, signInWithPopup } from '/js/firebase-config.js';
+
+        document.addEventListener('DOMContentLoaded', () => {
+             const googleBtn = document.getElementById('google-login-btn');
+             if (googleBtn) {
+                 googleBtn.addEventListener('click', async (e) => {
+                     e.preventDefault();
+                     
+                     // Disable button and show loading state if possible
+                     const originalText = googleBtn.innerHTML;
+                     googleBtn.innerHTML = 'Signing in...';
+                     googleBtn.disabled = true;
+
+                     try {
+                         const provider = new GoogleAuthProvider();
+                         const result = await signInWithPopup(auth, provider);
+                         const user = result.user;
+                         const idToken = await user.getIdToken();
+
+                         // Send token to backend
+                         const response = await fetch('/api/FirebaseAuth/verify', {
+                             method: 'POST',
+                             headers: {
+                                 'Content-Type': 'application/json'
+                             },
+                             body: JSON.stringify({ idToken: idToken })
+                         });
+
+                         if (response.ok) {
+                             const data = await response.json();
+                             // Redirect to returnUrl or home
+                             const params = new URLSearchParams(window.location.search);
+                             const returnUrl = params.get('ReturnUrl') || '/';
+                             window.location.href = returnUrl;
+                         } else {
+                             const error = await response.text();
+                             console.error('Login failed:', error);
+                             alert('Login failed: ' + error);
+                             googleBtn.innerHTML = originalText;
+                             googleBtn.disabled = false;
+                         }
+                     } catch (error) {
+                         console.error('Firebase Auth Error:', error);
+                         alert('Authentication failed: ' + error.message);
+                         googleBtn.innerHTML = originalText;
+                         googleBtn.disabled = false;
+                     }
+                 });
+             }
+        });
+    </script>
+}

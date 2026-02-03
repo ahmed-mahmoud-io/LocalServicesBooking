@@ -1,0 +1,164 @@
+@model LocalServicesBooking.Models.ViewModels.RegisterViewModel
+
+@{
+    ViewData["Title"] = "Register";
+    Layout = "_Layout";
+}
+
+<div class="auth-container">
+    <div class="auth-card animate-scale-in" style="max-width: 500px;">
+        <div class="auth-logo">
+            LocalServices<span class="text-gradient">Booking</span>
+        </div>
+        
+        <h1 class="auth-title">Create Account</h1>
+        <p class="auth-subtitle">Join us and start booking services or become a provider</p>
+        
+        <!-- Social Sign Up -->
+        <form asp-controller="Account" asp-action="ExternalLogin" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post">
+            <button type="submit" name="provider" value="Google" class="social-btn google">
+                <svg width="20" height="20" viewBox="0 0 24 24">
+                    <path fill="#EA4335" d="M5.26620003,9.76452941 C6.19878754,6.93863203 8.85444915,4.90909091 12,4.90909091 C13.6909091,4.90909091 15.2181818,5.50909091 16.4181818,6.49090909 L19.9090909,3 C17.7818182,1.14545455 15.0545455,0 12,0 C7.27006974,0 3.1977497,2.69829785 1.23999023,6.65002441 L5.26620003,9.76452941 Z"/>
+                    <path fill="#34A853" d="M16.0407269,18.0125889 C14.9509167,18.7163016 13.5660892,19.0909091 12,19.0909091 C8.86648613,19.0909091 6.21911939,17.076871 5.27698177,14.2678769 L1.23746264,17.3349879 C3.19279051,21.2936293 7.26500293,24 12,24 C14.9328362,24 17.7353462,22.9573905 19.834192,20.9995801 L16.0407269,18.0125889 Z"/>
+                    <path fill="#4A90E2" d="M19.834192,20.9995801 C22.0291676,18.9520994 23.4545455,15.903663 23.4545455,12 C23.4545455,11.2909091 23.3454545,10.5272727 23.1818182,9.81818182 L12,9.81818182 L12,14.4545455 L18.4363636,14.4545455 C18.1187732,16.013626 17.2662994,17.2212117 16.0407269,18.0125889 L19.834192,20.9995801 Z"/>
+                    <path fill="#FBBC05" d="M5.27698177,14.2678769 C5.03832634,13.556323 4.90909091,12.7937589 4.90909091,12 C4.90909091,11.2182781 5.03443647,10.4668121 5.26620003,9.76452941 L1.23999023,6.65002441 C0.43658717,8.26043162 0,10.0753848 0,12 C0,13.9195484 0.444780743,15.7301709 1.23746264,17.3349879 L5.27698177,14.2678769 Z"/>
+                </svg>
+                Sign up with Google
+            </button>
+        </form>
+        
+        <div class="auth-divider">or register with email</div>
+        
+        <!-- Registration Form -->
+        <form asp-action="Register" method="post" data-validate>
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-3" role="alert"></div>
+            
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label asp-for="FirstName" class="form-label">First Name</label>
+                    <input asp-for="FirstName" class="form-control" placeholder="John" />
+                    <span asp-validation-for="FirstName" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="LastName" class="form-label">Last Name</label>
+                    <input asp-for="LastName" class="form-control" placeholder="Doe" />
+                    <span asp-validation-for="LastName" class="text-danger small"></span>
+                </div>
+            </div>
+            
+            <div class="mb-3 mt-3">
+                <label asp-for="Email" class="form-label">Email Address</label>
+                <div class="position-relative">
+                    <input asp-for="Email" class="form-control" placeholder="you@example.com" style="padding-left: 2.5rem;" />
+                    <i class="bi bi-envelope position-absolute" style="left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+                </div>
+                <span asp-validation-for="Email" class="text-danger small"></span>
+            </div>
+            
+            <div class="mb-3">
+                <label asp-for="Password" class="form-label">Password</label>
+                <div class="password-toggle-wrapper">
+                    <input asp-for="Password" class="form-control has-password-toggle" placeholder="Create a strong password" style="padding-left: 2.5rem;" id="regPassword" data-password-strength />
+                    <i class="bi bi-lock position-absolute" style="left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+                    <button type="button" class="password-toggle-btn" onclick="togglePassword('regPassword', this)" aria-label="Toggle password visibility">
+                        <i class="bi bi-eye"></i>
+                    </button>
+                </div>
+                <span asp-validation-for="Password" class="text-danger small"></span>
+            </div>
+            
+            <div class="mb-4">
+                <label asp-for="ConfirmPassword" class="form-label">Confirm Password</label>
+                <div class="password-toggle-wrapper">
+                    <input asp-for="ConfirmPassword" class="form-control has-password-toggle" placeholder="Confirm your password" style="padding-left: 2.5rem;" id="regConfirmPassword" />
+                    <i class="bi bi-shield-lock position-absolute" style="left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+                    <button type="button" class="password-toggle-btn" onclick="togglePassword('regConfirmPassword', this)" aria-label="Toggle password visibility">
+                        <i class="bi bi-eye"></i>
+                    </button>
+                </div>
+                <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+            </div>
+            
+            <!-- User Type Selection -->
+            <div class="mb-4">
+                <label class="form-label">I want to</label>
+                <div class="row g-3">
+                    <div class="col-6">
+                        <input type="radio" asp-for="UserType" value="Customer" id="userTypeCustomer" class="btn-check" />
+                        <label for="userTypeCustomer" class="btn btn-outline-primary w-100 py-3">
+                            <i class="bi bi-person-circle d-block fs-3 mb-2"></i>
+                            <span class="fw-semibold">Book Services</span>
+                            <small class="d-block text-muted mt-1">As a Customer</small>
+                        </label>
+                    </div>
+                    <div class="col-6">
+                        <input type="radio" asp-for="UserType" value="Provider" id="userTypeProvider" class="btn-check" />
+                        <label for="userTypeProvider" class="btn btn-outline-primary w-100 py-3">
+                            <i class="bi bi-briefcase d-block fs-3 mb-2"></i>
+                            <span class="fw-semibold">Offer Services</span>
+                            <small class="d-block text-muted mt-1">As a Provider</small>
+                        </label>
+                    </div>
+                </div>
+                <span asp-validation-for="UserType" class="text-danger small"></span>
+            </div>
+            
+            <div class="form-check mb-4">
+                <input type="checkbox" class="form-check-input" id="agreeTerms" required />
+                <label class="form-check-label" for="agreeTerms">
+                    I agree to the <a href="#" class="text-primary">Terms of Service</a> and <a href="#" class="text-primary">Privacy Policy</a>
+                </label>
+            </div>
+            
+            <button type="submit" class="btn btn-primary w-100 btn-lg mb-3">
+                <i class="bi bi-person-plus me-2"></i> Create Account
+            </button>
+        </form>
+        
+        <p class="text-center text-secondary mb-0">
+            Already have an account? 
+            <a asp-controller="Account" asp-action="Login" class="text-primary text-decoration-none fw-medium">Sign in</a>
+        </p>
+    </div>
+</div>
+
+<style>
+    .btn-check:checked + .btn-outline-primary {
+        background: var(--gradient-primary);
+        border-color: var(--primary);
+        color: white;
+    }
+    
+    .password-strength-indicator .strength-bar {
+        height: 4px;
+        background: var(--border-color);
+        border-radius: var(--radius-full);
+        overflow: hidden;
+    }
+    
+    .password-strength-indicator .strength-fill {
+        height: 100%;
+        width: 0;
+        transition: all var(--transition-base);
+        border-radius: var(--radius-full);
+    }
+</style>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        function togglePassword(inputId, btn) {
+            const input = document.getElementById(inputId);
+            const icon = btn.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('bi-eye');
+                icon.classList.add('bi-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('bi-eye-slash');
+                icon.classList.add('bi-eye');
+            }
+        }
+    </script>
+}
