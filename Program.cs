@@ -70,18 +70,20 @@ builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-// Seed Data
+// Apply pending migrations and seed data
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     try
     {
-         LocalServicesBooking.Data.DbSeeder.SeedAsync(app).Wait();
+        var context = services.GetRequiredService<ApplicationDbContext>();
+        context.Database.Migrate(); // Apply any pending migrations
+        LocalServicesBooking.Data.DbSeeder.SeedAsync(app).Wait();
     }
     catch (Exception ex)
     {
         var logger = services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "An error occurred while seeding the database.");
+        logger.LogError(ex, "An error occurred while migrating or seeding the database.");
     }
 }
 
