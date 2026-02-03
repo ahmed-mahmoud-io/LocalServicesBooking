@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using LocalServicesBooking.Models.Entities;
 using LocalServicesBooking.Models.ViewModels;
 using LocalServicesBooking.Services.Interfaces;
@@ -82,7 +83,11 @@ namespace LocalServicesBooking.Controllers
         public async Task<IActionResult> AddService()
         {
             var categories = await _providerService.GetCategoriesAsync();
-            ViewBag.Categories = categories;
+            ViewBag.Categories = categories.Select(c => new SelectListItem
+            {
+                Value = c.CategoryId.ToString(),
+                Text = c.Name
+            }).ToList();
             return View(new AddServiceViewModel());
         }
 
@@ -111,7 +116,12 @@ namespace LocalServicesBooking.Controllers
                  return RedirectToAction("ManageServices");
              }
              
-             ViewBag.Categories = await _providerService.GetCategoriesAsync();
+             var categories = await _providerService.GetCategoriesAsync();
+             ViewBag.Categories = categories.Select(c => new SelectListItem
+             {
+                 Value = c.CategoryId.ToString(),
+                 Text = c.Name
+             }).ToList();
              return View(model);
         }
 
