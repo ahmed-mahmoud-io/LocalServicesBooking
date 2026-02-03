@@ -122,63 +122,75 @@ namespace LocalServicesBooking.Controllers
                 ModelState.AddModelError(string.Empty, $"Error from external provider: {remoteError}");
                 return View("Login");
             }
-            var info = await _signInManager.GetExternalLoginInfoAsync();
-            if (info == null)
-            {
-                ModelState.AddModelError(string.Empty, "Error loading external login information.");
-                return View("Login");
-            }
 
-            // Sign in the user with this external login provider if the user already has a login.
-            var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
-            if (result.Succeeded)
+            try
             {
-                return LocalRedirect(returnUrl);
-            }
-            if (result.IsLockedOut)
-            {
-                return RedirectToAction("Lockout");
-            }
-            else
-            {
-                // If the user does not have an account, then ask the user to create an account.
-                var email = info.Principal.FindFirstValue(ClaimTypes.Email);
-                if (email != null)
+                var info = await _signInManager.GetExternalLoginInfoAsync();
+                if (info == null)
                 {
-                    var user = await _userManager.FindByEmailAsync(email);
-                    if (user == null)
+                    ModelState.AddModelError(string.Empty, "Error loading external login information.");
+                    return View("Login");
+                }
+
+                // Sign in the user with this external login provider if the user already has a login.
+                var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
+                if (result.Succeeded)
+                {
+                    return LocalRedirect(returnUrl);
+                }
+                if (result.IsLockedOut)
+                {
+                    return RedirectToAction("Lockout");
+                }
+                else
+                {
+                    // If the user does not have an account, then ask the user to create an account.
+                    var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+                    if (email != null)
                     {
-                        user = new User 
-                        { 
-                            UserName = email, 
-                            Email = email,
-                            UserType = "Customer", // Default behavior
-                            EmailConfirmed = true 
-                        };
-                        var createResult = await _userManager.CreateAsync(user);
-                        if (createResult.Succeeded)
+                        var user = await _userManager.FindByEmailAsync(email);
+                        if (user == null)
                         {
-                            createResult = await _userManager.AddLoginAsync(user, info);
+                            user = new User 
+                            { 
+                                UserName = email, 
+                                Email = email,
+                                FirstName = info.Principal.FindFirstValue(ClaimTypes.GivenName),
+                                LastName = info.Principal.FindFirstValue(ClaimTypes.Surname),
+                                UserType = "Customer", // Default behavior
+                                EmailConfirmed = true,
+                                ProfileImageUrl = info.Principal.FindFirstValue("picture") // Try to get profile picture
+                            };
+                            var createResult = await _userManager.CreateAsync(user);
                             if (createResult.Succeeded)
+                            {
+                                createResult = await _userManager.AddLoginAsync(user, info);
+                                if (createResult.Succeeded)
+                                {
+                                    await _signInManager.SignInAsync(user, isPersistent: false);
+                                    return LocalRedirect(returnUrl);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            var linkResult = await _userManager.AddLoginAsync(user, info);
+                            if (linkResult.Succeeded)
                             {
                                 await _signInManager.SignInAsync(user, isPersistent: false);
                                 return LocalRedirect(returnUrl);
                             }
                         }
                     }
-                    else
-                    {
-                        var linkResult = await _userManager.AddLoginAsync(user, info);
-                        if (linkResult.Succeeded)
-                        {
-                            await _signInManager.SignInAsync(user, isPersistent: false);
-                            return LocalRedirect(returnUrl);
-                        }
-                    }
-                }
 
-                // If we got here, something failed
-                ModelState.AddModelError(string.Empty, "Could not create an account for you.");
+                    // If we got here, something failed
+                    ModelState.AddModelError(string.Empty, "Could not create an account for you.");
+                    return View("Login");
+                }
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, $"Internal Error during Google Login: {ex.Message} --- {ex.InnerException?.Message}");
                 return View("Login");
             }
         }
