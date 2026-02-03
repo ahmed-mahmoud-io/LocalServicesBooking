@@ -46,6 +46,11 @@
                         }
                         
                         <form asp-action="Profile" method="post" enctype="multipart/form-data" data-validate>
+                            <!-- Hidden fields to preserve existing values -->
+                            <input type="hidden" asp-for="ProfileImageUrl" />
+                            <input type="hidden" asp-for="Email" />
+                            <input type="hidden" asp-for="UserType" />
+                            
                             <h5 class="mb-3 d-flex align-items-center">
                                 <i class="bi bi-person me-2 text-primary"></i> Personal Information
                             </h5>
