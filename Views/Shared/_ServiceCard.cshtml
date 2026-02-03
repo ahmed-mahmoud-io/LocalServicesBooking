@@ -2,66 +2,61 @@
    Usage: <partial name="_ServiceCard" model="service" />
 *@
 
-@model LocalServicesBooking.Models.Entities.Service
+@model LocalServicesBooking.Models.Entities.ProviderService
 
 <div class="service-card">
     <div class="service-card-image">
-        @if (Model.Images != null && Model.Images.Any())
-        {
-            <img src="@Model.Images.First().ImageUrl" alt="@Model.ServiceName">
-        }
-        else
-        {
-            <img src="/images/placeholders/service-default.jpg" alt="@Model.ServiceName">
-        }
+        @* Use a placeholder image since ProviderService doesn't have Images collection *@
+        <img src="/images/placeholders/service-default.jpg" alt="@Model.ServiceName">
         
-        @* Badges for special services *@
-        @if (Model.IsFeatured)
-        {
-            <div class="service-card-badge badge-featured">Featured</div>
-        }
-        else if (Model.IsNew)
-        {
-            <div class="service-card-badge badge-new">New</div>
-        }
-        else if (Model.IsPopular)
-        {
-            <div class="service-card-badge badge-popular">Popular</div>
-        }
+        @* Placeholder for badges - you can add these properties to ProviderService later *@
+        <div class="service-card-badge badge-popular">Popular</div>
     </div>
     
     <div class="service-card-body">
         <h3 class="service-card-title">@Model.ServiceName</h3>
         
         @* Provider Info *@
-        <div class="service-card-provider">
-            @if (!string.IsNullOrEmpty(Model.Provider?.ProfileImageUrl))
-            {
-                <img src="@Model.Provider.ProfileImageUrl" alt="@Model.Provider.FirstName @Model.Provider.LastName">
-            }
-            <span>@Model.Provider?.FirstName @Model.Provider?.LastName</span>
-        </div>
+        @if (Model.Provider != null)
+        {
+            <div class="service-card-provider">
+                @if (!string.IsNullOrEmpty(Model.Provider.ProfileImageUrl))
+                {
+                    <img src="@Model.Provider.ProfileImageUrl" alt="@Model.Provider.FirstName @Model.Provider.LastName">
+                }
+                <span>@Model.Provider.FirstName @Model.Provider.LastName</span>
+            </div>
+        }
         
-        @* Rating *@
+        @* Rating - placeholder, add these properties to ProviderService if needed *@
         <div class="service-card-rating">
             <i class="bi bi-star-fill"></i>
-            <span class="service-card-rating-value">@Model.AverageRating?.ToString("0.0")</span>
-            <span class="service-card-rating-count">(@Model.ReviewCount reviews)</span>
+            <span class="service-card-rating-value">4.5</span>
+            <span class="service-card-rating-count">(0 reviews)</span>
         </div>
         
         @* Description *@
-        <p class="service-card-description">@Model.Description</p>
+        @if (!string.IsNullOrEmpty(Model.Description))
+        {
+            <p class="service-card-description">@Model.Description</p>
+        }
         
         @* Meta Info *@
         <div class="service-card-meta">
-            <div class="service-card-meta-item">
-                <i class="bi bi-clock"></i>
-                <span>@Model.DurationMinutes min</span>
-            </div>
-            <div class="service-card-meta-item">
-                <i class="bi bi-geo-alt"></i>
-                <span>@Model.Location</span>
-            </div>
+            @if (Model.DurationMinutes.HasValue)
+            {
+                <div class="service-card-meta-item">
+                    <i class="bi bi-clock"></i>
+                    <span>@Model.DurationMinutes min</span>
+                </div>
+            }
+            @if (Model.ServiceCategory != null)
+            {
+                <div class="service-card-meta-item">
+                    <i class="bi bi-tag"></i>
+                    <span>@Model.ServiceCategory.CategoryName</span>
+                </div>
+            }
         </div>
     </div>
     
@@ -69,8 +64,11 @@
         @* Price *@
         <div class="service-card-price">
             <span class="service-card-price-label">From</span>
-            <span class="service-card-price-value">$@Model.Price</span>
-            <span class="service-card-price-period">/ session</span>
+            <span class="service-card-price-value">$@Model.BasePrice</span>
+            @if (!string.IsNullOrEmpty(Model.PriceUnit))
+            {
+                <span class="service-card-price-period">/ @Model.PriceUnit</span>
+            }
         </div>
         
         @* Action Buttons *@
@@ -84,3 +82,4 @@
         </div>
     </div>
 </div>
+
