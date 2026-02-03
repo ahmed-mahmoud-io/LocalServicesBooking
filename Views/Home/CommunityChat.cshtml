@@ -1,30 +1,114 @@
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<LocalServicesBooking.Models.Entities.User> SignInManager
+@inject UserManager<LocalServicesBooking.Models.Entities.User> UserManager
+
 @{
     ViewData["Title"] = "Community Chat";
+    var isLoggedIn = SignInManager.IsSignedIn(User);
+    var currentUser = isLoggedIn ? await UserManager.GetUserAsync(User) : null;
+    var displayName = currentUser != null ? $"{currentUser.FirstName} {currentUser.LastName}" : "Guest";
+    var userId = currentUser?.Id.ToString() ?? "";
 }
 
-<div class="container py-5">
+<div class="container py-4">
     <div class="row justify-content-center">
-        <div class="col-md-10">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                    <h4 class="mb-0"><i class="bi bi-chat-dots me-2"></i>Community Chat</h4>
-                    <span id="connection-status" class="badge bg-warning text-dark">Connecting...</span>
-                </div>
-                <div class="card-body p-0">
-                    <div id="chat-messages" class="p-3" style="height: 500px; overflow-y: auto; background-color: #f8f9fa;">
-                        <!-- Messages will appear here -->
-                        <div class="text-center text-muted mt-5">Loading messages...</div>
+        <div class="col-lg-10 col-xl-9">
+            <!-- Chat Card -->
+            <div class="glass-card overflow-hidden" style="border-radius: var(--radius-xl);">
+                <!-- Header -->
+                <div class="p-4 d-flex justify-content-between align-items-center" 
+                     style="background: var(--gradient-primary); border-bottom: 1px solid var(--glass-border);">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="d-flex align-items-center justify-content-center rounded-circle" 
+                             style="width: 50px; height: 50px; background: rgba(255,255,255,0.2);">
+                            <i class="bi bi-chat-heart-fill fs-4 text-white"></i>
+                        </div>
+                        <div>
+                            <h4 class="mb-0 text-white fw-bold">Community Chat</h4>
+                            <small class="text-white-50">Connect with our community</small>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <span id="online-count" class="badge bg-light text-dark">
+                            <i class="bi bi-people-fill me-1"></i><span id="count-value">0</span> online
+                        </span>
+                        <span id="connection-status" class="badge bg-warning">
+                            <i class="bi bi-wifi me-1"></i>Connecting...
+                        </span>
                     </div>
                 </div>
-                <div class="card-footer">
-                    <form id="chat-form" class="d-flex gap-2">
-                        <input type="text" id="message-input" class="form-control" placeholder="Type your message..." required disabled>
-                        <button type="submit" id="send-btn" class="btn btn-primary" disabled>
-                            <i class="bi bi-send"></i>
-                        </button>
-                    </form>
-                    <div id="auth-warning" class="text-danger small mt-2" style="display: none;">
-                        You must be logged in to post messages.
+                
+                <!-- Messages Area -->
+                <div id="chat-messages" class="p-4" 
+                     style="height: 450px; overflow-y: auto; background: var(--bg-secondary);">
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-primary mb-3" role="status"></div>
+                        <p style="color: var(--text-muted);">Connecting to chat...</p>
+                    </div>
+                </div>
+                
+                <!-- Input Area -->
+                <div class="p-3" style="background: var(--glass-bg); border-top: 1px solid var(--glass-border);">
+                    @if (isLoggedIn)
+                    {
+                        <form id="chat-form" class="d-flex gap-3">
+                            <div class="flex-grow-1 position-relative">
+                                <input type="text" id="message-input" 
+                                       class="form-control form-control-lg" 
+                                       placeholder="Type your message..."
+                                       autocomplete="off"
+                                       style="padding-right: 50px; border-radius: var(--radius-full);">
+                                <button type="button" class="btn btn-link position-absolute" 
+                                        style="right: 10px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"
+                                        title="Emoji (coming soon)">
+                                    <i class="bi bi-emoji-smile fs-5"></i>
+                                </button>
+                            </div>
+                            <button type="submit" id="send-btn" class="btn btn-primary btn-lg px-4" 
+                                    style="border-radius: var(--radius-full);">
+                                <i class="bi bi-send-fill"></i>
+                            </button>
+                        </form>
+                        <div class="mt-2 d-flex align-items-center gap-2">
+                            <img src="@(currentUser?.ProfileImageUrl ?? (currentUser?.Gender == "Male" ? "/images/defaults/default_male.png" : currentUser?.Gender == "Female" ? "/images/defaults/default_female.png" : "/images/defaults/default_user.png"))" 
+                                 alt="You" class="rounded-circle" style="width: 24px; height: 24px; object-fit: cover;">
+                            <small style="color: var(--text-muted);">Chatting as <strong style="color: var(--text-primary);">@displayName</strong></small>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-3">
+                            <i class="bi bi-lock-fill fs-4 mb-2 d-block" style="color: var(--text-muted);"></i>
+                            <p class="mb-3" style="color: var(--text-secondary);">Please login to join the conversation</p>
+                            <a asp-controller="Account" asp-action="Login" class="btn btn-primary">
+                                <i class="bi bi-box-arrow-in-right me-2"></i>Login to Chat
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+            
+            <!-- Chat Guidelines -->
+            <div class="glass-card p-4 mt-4" style="border-radius: var(--radius-lg);">
+                <h6 class="mb-3" style="color: var(--text-primary);"><i class="bi bi-info-circle me-2 text-primary"></i>Community Guidelines</h6>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <div class="d-flex align-items-start gap-2">
+                            <i class="bi bi-heart text-danger"></i>
+                            <small style="color: var(--text-secondary);">Be respectful and kind to everyone</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="d-flex align-items-start gap-2">
+                            <i class="bi bi-shield-check text-success"></i>
+                            <small style="color: var(--text-secondary);">No spam or self-promotion</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="d-flex align-items-start gap-2">
+                            <i class="bi bi-chat-left-text text-primary"></i>
+                            <small style="color: var(--text-secondary);">Keep discussions relevant</small>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -34,130 +118,247 @@
 
 <style>
     .message-bubble {
-        max-width: 80%;
+        max-width: 75%;
         margin-bottom: 1rem;
-        padding: 0.75rem 1rem;
-        border-radius: 1rem;
-        position: relative;
+        animation: fadeIn 0.3s ease;
     }
+    
+    @@keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
     .message-mine {
-        background-color: var(--bs-primary);
-        color: white;
         margin-left: auto;
-        border-bottom-right-radius: 0.25rem;
     }
+    
+    .message-mine .message-content {
+        background: var(--gradient-primary);
+        color: white;
+        border-radius: var(--radius-lg) var(--radius-lg) 4px var(--radius-lg);
+        padding: 0.875rem 1.25rem;
+    }
+    
     .message-others {
-        background-color: white;
-        border: 1px solid #dee2e6;
         margin-right: auto;
-        border-bottom-left-radius: 0.25rem;
     }
-    .message-meta {
-        font-size: 0.75rem;
-        margin-bottom: 0.25rem;
-        opacity: 0.8;
+    
+    .message-others .message-content {
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        color: var(--text-primary);
+        border-radius: var(--radius-lg) var(--radius-lg) var(--radius-lg) 4px;
+        padding: 0.875rem 1.25rem;
     }
+    
+    .message-header {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .message-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+    
+    .message-sender {
+        font-weight: 600;
+        font-size: 0.875rem;
+        color: var(--text-primary);
+    }
+    
     .message-time {
         font-size: 0.7rem;
-        opacity: 0.7;
-        text-align: right;
-        display: block;
+        color: var(--text-muted);
         margin-top: 0.25rem;
+    }
+    
+    .message-mine .message-time {
+        text-align: right;
+        color: rgba(255,255,255,0.7);
+    }
+    
+    #chat-messages::-webkit-scrollbar {
+        width: 6px;
+    }
+    
+    #chat-messages::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    
+    #chat-messages::-webkit-scrollbar-thumb {
+        background: var(--border-color);
+        border-radius: 3px;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+    }
+    
+    .empty-state i {
+        font-size: 4rem;
+        color: var(--text-muted);
+        margin-bottom: 1rem;
     }
 </style>
 
 @section Scripts {
-    <script type="module">
-        import { db, auth } from '/js/firebase-config.js';
-        import { collection, addDoc, query, orderBy, limit, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
-        const messagesContainer = document.getElementById('chat-messages');
-        const chatForm = document.getElementById('chat-form');
-        const messageInput = document.getElementById('message-input');
-        const sendBtn = document.getElementById('send-btn');
-        const connectionStatus = document.getElementById('connection-status');
-        const authWarning = document.getElementById('auth-warning');
-
-        let currentUser = null;
-
-        // Monitor Auth State
-        onAuthStateChanged(auth, (user) => {
-            currentUser = user;
-            if (user) {
-                messageInput.disabled = false;
-                sendBtn.disabled = false;
-                authWarning.style.display = 'none';
-                messageInput.placeholder = `Message as ${user.displayName || user.email}...`;
-            } else {
-                messageInput.disabled = true;
-                sendBtn.disabled = true;
-                authWarning.style.display = 'block';
-                messageInput.placeholder = "Please login to chat";
-            }
-        });
-
-        // Listen for Messages
-        const q = query(collection(db, "community_messages"), orderBy("createdAt", "asc"), limit(50));
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
+    <script>
+        const isLoggedIn = @(isLoggedIn ? "true" : "false");
+        const currentUserId = "@userId";
+        const currentDisplayName = "@Html.Raw(displayName.Replace("\"", "\\\""))";
         
-        onSnapshot(q, (snapshot) => {
-            connectionStatus.textContent = "Connected";
-            connectionStatus.className = "badge bg-success";
+        if (isLoggedIn) {
+            const connection = new signalR.HubConnectionBuilder()
+                .withUrl("/chatHub")
+                .withAutomaticReconnect()
+                .build();
             
-            messagesContainer.innerHTML = '';
+            const messagesContainer = document.getElementById('chat-messages');
+            const chatForm = document.getElementById('chat-form');
+            const messageInput = document.getElementById('message-input');
+            const connectionStatus = document.getElementById('connection-status');
+            const sendBtn = document.getElementById('send-btn');
             
-            if (snapshot.empty) {
-                messagesContainer.innerHTML = '<div class="text-center text-muted mt-5">No messages yet. Be the first!</div>';
-                return;
-            }
-
-            snapshot.forEach((doc) => {
-                const msg = doc.data();
-                const isMine = currentUser && msg.uid === currentUser.uid;
+            let messages = [];
+            
+            // Connection status updates
+            connection.onreconnecting(() => {
+                connectionStatus.innerHTML = '<i class="bi bi-wifi me-1"></i>Reconnecting...';
+                connectionStatus.className = 'badge bg-warning';
+            });
+            
+            connection.onreconnected(() => {
+                connectionStatus.innerHTML = '<i class="bi bi-wifi me-1"></i>Connected';
+                connectionStatus.className = 'badge bg-success';
+            });
+            
+            connection.onclose(() => {
+                connectionStatus.innerHTML = '<i class="bi bi-wifi-off me-1"></i>Disconnected';
+                connectionStatus.className = 'badge bg-danger';
+            });
+            
+            // Receive messages
+            connection.on("ReceiveCommunityMessage", (userId, displayName, message, time) => {
+                addMessage(userId, displayName, message, time);
+            });
+            
+            function addMessage(userId, displayName, message, time) {
+                const isMine = userId === currentUserId;
                 
                 const div = document.createElement('div');
                 div.className = `message-bubble ${isMine ? 'message-mine' : 'message-others'}`;
                 
-                const time = msg.createdAt ? new Date(msg.createdAt.seconds * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Sending...';
+                if (!isMine) {
+                    div.innerHTML = `
+                        <div class="message-header">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center" 
+                                 style="width: 32px; height: 32px; background: var(--gradient-primary); color: white; font-size: 0.75rem; font-weight: 600;">
+                                ${displayName.charAt(0).toUpperCase()}
+                            </div>
+                            <span class="message-sender">${escapeHtml(displayName)}</span>
+                        </div>
+                        <div class="message-content">${escapeHtml(message)}</div>
+                        <div class="message-time">${time}</div>
+                    `;
+                } else {
+                    div.innerHTML = `
+                        <div class="message-content">${escapeHtml(message)}</div>
+                        <div class="message-time">${time}</div>
+                    `;
+                }
                 
-                div.innerHTML = `
-                    <div class="message-meta">${isMine ? 'You' : (msg.displayName || 'Anonymous')}</div>
-                    <div class="message-text">${escapeHtml(msg.text)}</div>
-                    <span class="message-time">${time}</span>
-                `;
+                // Remove empty state if exists
+                const emptyState = messagesContainer.querySelector('.empty-state');
+                if (emptyState) emptyState.remove();
                 
                 messagesContainer.appendChild(div);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+            
+            function escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+            
+            function showEmptyState() {
+                messagesContainer.innerHTML = `
+                    <div class="empty-state">
+                        <i class="bi bi-chat-square-heart"></i>
+                        <h5 style="color: var(--text-primary);">No messages yet</h5>
+                        <p style="color: var(--text-muted);">Be the first to start the conversation!</p>
+                    </div>
+                `;
+            }
+            
+            // Start connection
+            connection.start()
+                .then(() => {
+                    connectionStatus.innerHTML = '<i class="bi bi-wifi me-1"></i>Connected';
+                    connectionStatus.className = 'badge bg-success';
+                    showEmptyState();
+                    messageInput.focus();
+                })
+                .catch(err => {
+                    console.error('Connection error:', err);
+                    connectionStatus.innerHTML = '<i class="bi bi-wifi-off me-1"></i>Failed';
+                    connectionStatus.className = 'badge bg-danger';
+                    messagesContainer.innerHTML = `
+                        <div class="text-center py-5">
+                            <i class="bi bi-exclamation-triangle fs-1 text-warning mb-3 d-block"></i>
+                            <p style="color: var(--text-secondary);">Failed to connect to chat server</p>
+                            <button class="btn btn-outline-primary btn-sm" onclick="location.reload()">
+                                <i class="bi bi-arrow-clockwise me-1"></i>Retry
+                            </button>
+                        </div>
+                    `;
+                });
+            
+            // Send message
+            chatForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const text = messageInput.value.trim();
+                if (!text) return;
+                
+                sendBtn.disabled = true;
+                
+                try {
+                    await connection.invoke("SendCommunityMessage", currentDisplayName, text);
+                    messageInput.value = '';
+                } catch (err) {
+                    console.error('Send error:', err);
+                    alert('Failed to send message. Please try again.');
+                } finally {
+                    sendBtn.disabled = false;
+                    messageInput.focus();
+                }
             });
             
-            // Auto scroll to bottom
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        });
-
-        // Send Message
-        chatForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const text = messageInput.value.trim();
-            if (!text || !currentUser) return;
-
-            try {
-                await addDoc(collection(db, "community_messages"), {
-                    text: text,
-                    uid: currentUser.uid,
-                    displayName: currentUser.displayName || currentUser.email,
-                    photoURL: currentUser.photoURL,
-                    createdAt: serverTimestamp()
-                });
-                messageInput.value = '';
-            } catch (error) {
-                console.error("Error sending message:", error);
-                alert("Failed to send message: " + error.message);
-            }
-        });
-
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
+            // Enter to send
+            messageInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    chatForm.dispatchEvent(new Event('submit'));
+                }
+            });
+        } else {
+            // Show empty state for non-logged in users
+            document.getElementById('chat-messages').innerHTML = `
+                <div class="empty-state">
+                    <i class="bi bi-chat-square-heart"></i>
+                    <h5 style="color: var(--text-primary);">Join the Conversation</h5>
+                    <p style="color: var(--text-muted);">Login to see messages and chat with the community</p>
+                </div>
+            `;
+            document.getElementById('connection-status').innerHTML = '<i class="bi bi-eye me-1"></i>View Only';
+            document.getElementById('connection-status').className = 'badge bg-secondary';
         }
     </script>
 }

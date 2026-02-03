@@ -18,7 +18,6 @@ namespace LocalServicesBooking.Models.ViewModels
         public string? PhoneNumber { get; set; }
 
         [Display(Name = "Profile Image URL")]
-        [Url]
         public string? ProfileImageUrl { get; set; }
         
         [Display(Name = "Profile Picture")]
