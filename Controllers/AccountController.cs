@@ -120,7 +120,7 @@ namespace LocalServicesBooking.Controllers
             if (remoteError != null)
             {
                 ModelState.AddModelError(string.Empty, $"Error from external provider: {remoteError}");
-                return View("Login");
+                return View("Login", new LoginViewModel());
             }
 
             try
@@ -129,7 +129,7 @@ namespace LocalServicesBooking.Controllers
                 if (info == null)
                 {
                     ModelState.AddModelError(string.Empty, "Error loading external login information.");
-                    return View("Login");
+                    return View("Login", new LoginViewModel());
                 }
 
                 // Sign in the user with this external login provider if the user already has a login.
@@ -185,13 +185,13 @@ namespace LocalServicesBooking.Controllers
 
                     // If we got here, something failed
                     ModelState.AddModelError(string.Empty, "Could not create an account for you.");
-                    return View("Login");
+                    return View("Login", new LoginViewModel());
                 }
             }
             catch (Exception ex)
             {
                 ModelState.AddModelError(string.Empty, $"Internal Error during Google Login: {ex.Message} --- {ex.InnerException?.Message}");
-                return View("Login");
+                return View("Login", new LoginViewModel());
             }
         }
 
