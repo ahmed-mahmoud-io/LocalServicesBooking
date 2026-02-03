@@ -86,7 +86,7 @@ namespace LocalServicesBooking.Controllers
             ViewBag.Categories = categories.Select(c => new SelectListItem
             {
                 Value = c.CategoryId.ToString(),
-                Text = c.Name
+                Text = c.CategoryName
             }).ToList();
             return View(new AddServiceViewModel());
         }
@@ -120,7 +120,7 @@ namespace LocalServicesBooking.Controllers
              ViewBag.Categories = categories.Select(c => new SelectListItem
              {
                  Value = c.CategoryId.ToString(),
-                 Text = c.Name
+                 Text = c.CategoryName
              }).ToList();
              return View(model);
         }
