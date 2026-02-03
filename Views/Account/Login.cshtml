@@ -99,53 +99,8 @@
     <script type="module">
         import { auth, GoogleAuthProvider, signInWithPopup } from '/js/firebase-config.js';
 
-        document.addEventListener('DOMContentLoaded', () => {
-             const googleBtn = document.getElementById('google-login-btn');
-             if (googleBtn) {
-                 googleBtn.addEventListener('click', async (e) => {
-                     e.preventDefault();
-                     
-                     // Disable button and show loading state if possible
-                     const originalText = googleBtn.innerHTML;
-                     googleBtn.innerHTML = 'Signing in...';
-                     googleBtn.disabled = true;
-
-                     try {
-                         const provider = new GoogleAuthProvider();
-                         const result = await signInWithPopup(auth, provider);
-                         const user = result.user;
-                         const idToken = await user.getIdToken();
-
-                         // Send token to backend
-                         const response = await fetch('/api/FirebaseAuth/verify', {
-                             method: 'POST',
-                             headers: {
-                                 'Content-Type': 'application/json'
-                             },
-                             body: JSON.stringify({ idToken: idToken })
-                         });
-
-                         if (response.ok) {
-                             const data = await response.json();
-                             // Redirect to returnUrl or home
-                             const params = new URLSearchParams(window.location.search);
-                             const returnUrl = params.get('ReturnUrl') || '/';
-                             window.location.href = returnUrl;
-                         } else {
-                             const error = await response.text();
-                             console.error('Login failed:', error);
-                             alert('Login failed: ' + error);
-                             googleBtn.innerHTML = originalText;
-                             googleBtn.disabled = false;
-                         }
-                     } catch (error) {
-                         console.error('Firebase Auth Error:', error);
-                         alert('Authentication failed: ' + error.message);
-                         googleBtn.innerHTML = originalText;
-                         googleBtn.disabled = false;
-                     }
-                 });
-             }
-        });
+        // Firebase logic removed in favor of Server-Side ASP.NET Identity
+    </script>
+}
     </script>
 }
