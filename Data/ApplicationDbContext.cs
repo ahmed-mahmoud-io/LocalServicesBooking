@@ -25,6 +25,7 @@ namespace LocalServicesBooking.Data
         public DbSet<ReviewPhoto> ReviewPhotos { get; set; }
         public DbSet<ProviderAvailability> ProviderAvailabilities { get; set; }
         public DbSet<ProviderPhoto> ProviderPhotos { get; set; }
+        public DbSet<ChatMessage> ChatMessages { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

@@ -31,10 +31,18 @@
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
                     LocalServices<span>Booking</span>
                 </a>
-                <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" 
-                        aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
-                    <i class="bi bi-list fs-4" style="color: var(--text-primary);"></i>
-                </button>
+                
+                <!-- Mobile: Theme toggle + Hamburger -->
+                <div class="d-flex align-items-center gap-2 d-lg-none">
+                    <button id="theme-toggle-mobile" class="btn btn-sm" title="Toggle theme" style="color: var(--text-primary);">
+                        <i class="bi bi-moon-fill"></i>
+                    </button>
+                    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" 
+                            aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
+                        <i class="bi bi-list fs-4" style="color: var(--text-primary);"></i>
+                    </button>
+                </div>
+                
                 <div class="collapse navbar-collapse" id="navbarMain">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
                         <li class="nav-item">
@@ -55,7 +63,8 @@
                     </ul>
                     <div class="d-flex align-items-center gap-2">
                         <partial name="_LoginPartial" />
-                        <button id="theme-toggle" class="btn" title="Toggle theme">
+                        <!-- Desktop theme toggle -->
+                        <button id="theme-toggle" class="btn d-none d-lg-block" title="Toggle theme">
                             <i class="bi bi-moon-fill"></i>
                         </button>
                     </div>
@@ -130,6 +139,12 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        // Mobile theme toggle - mirror the desktop behavior
+        document.getElementById('theme-toggle-mobile')?.addEventListener('click', function() {
+            document.getElementById('theme-toggle')?.click();
+        });
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
