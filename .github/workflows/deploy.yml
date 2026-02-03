@@ -1,0 +1,29 @@
+name: Deploy to MonsterASP.NET
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '9.0.x' 
+
+    - name: Publish
+      run: dotnet publish -c Release -o ./publish
+
+    - name: FTP Deploy
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      with:
+        server: site53172.siteasp.net
+        username: site53172
+        password: ${{ secrets.FTP_PASSWORD }}
+        local-dir: ./publish/
