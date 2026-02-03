@@ -190,8 +190,8 @@ namespace LocalServicesBooking.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError(string.Empty, $"Internal Error during Google Login: {ex.Message} --- {ex.InnerException?.Message}");
-                return View("Login", new LoginViewModel());
+                // FALLBACK DEBUGGING: Return raw error text to see why it crashes
+                return Content($"CRITICAL ERROR DURING LOGIN:\n\n{ex.Message}\n\nSTACK TRACE:\n{ex.StackTrace}\n\nINNER EXCEPTION:\n{ex.InnerException?.Message}");
             }
         }
 
