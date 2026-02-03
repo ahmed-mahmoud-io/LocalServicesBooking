@@ -29,6 +29,9 @@ namespace LocalServicesBooking.Models.ViewModels
         
         [Display(Name = "Last Name")]
         public string? LastName { get; set; }
+        
+        [Display(Name = "Gender")]
+        public string? Gender { get; set; } // "Male" or "Female"
     }
 
     public class LoginViewModel

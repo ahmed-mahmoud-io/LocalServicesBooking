@@ -14,6 +14,8 @@ namespace LocalServicesBooking.Models.Entities
         
         public string? ProfileImageUrl { get; set; }
         
+        public string? Gender { get; set; } // "Male", "Female", or null
+        
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
         

@@ -103,6 +103,24 @@
                 <span asp-validation-for="UserType" class="text-danger small"></span>
             </div>
             
+            <!-- Gender Selection -->
+            <div class="mb-4">
+                <label class="form-label">Gender</label>
+                <div class="row g-3">
+                    <div class="col-6">
+                        <input type="radio" asp-for="Gender" value="Male" id="genderMale" class="btn-check" />
+                        <label for="genderMale" class="btn btn-outline-secondary w-100 py-2">
+                            <i class="bi bi-gender-male me-1"></i>Male
+                        </label>
+                    </div>
+                    <div class="col-6">
+                        <input type="radio" asp-for="Gender" value="Female" id="genderFemale" class="btn-check" />
+                        <label for="genderFemale" class="btn btn-outline-secondary w-100 py-2">
+                            <i class="bi bi-gender-female me-1"></i>Female
+                        </label>
+                    </div>
+                </div>
+            </div>
             <div class="form-check mb-4">
                 <input type="checkbox" class="form-check-input" id="agreeTerms" required />
                 <label class="form-check-label" for="agreeTerms">

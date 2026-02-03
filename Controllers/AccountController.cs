@@ -13,12 +13,14 @@ namespace LocalServicesBooking.Controllers
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         private readonly IEmailSender _emailSender;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public AccountController(UserManager<User> userManager, SignInManager<User> signInManager, IEmailSender emailSender)
+        public AccountController(UserManager<User> userManager, SignInManager<User> signInManager, IEmailSender emailSender, IWebHostEnvironment webHostEnvironment)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         [HttpGet]
@@ -39,6 +41,7 @@ namespace LocalServicesBooking.Controllers
                     FirstName = model.FirstName,
                     LastName = model.LastName,
                     UserType = model.UserType,
+                    Gender = model.Gender,
                     CreatedAt = DateTime.UtcNow
                 };
 
@@ -241,6 +244,7 @@ namespace LocalServicesBooking.Controllers
                 LastName = user.LastName,
                 PhoneNumber = user.PhoneNumber,
                 ProfileImageUrl = user.ProfileImageUrl,
+                Gender = user.Gender,
                 Email = user.Email,
                 UserType = user.UserType
             };
@@ -258,7 +262,30 @@ namespace LocalServicesBooking.Controllers
              user.FirstName = model.FirstName;
              user.LastName = model.LastName;
              user.PhoneNumber = model.PhoneNumber;
-             user.ProfileImageUrl = model.ProfileImageUrl; // In a real app, handle file upload
+             user.Gender = model.Gender;
+             
+             // Handle profile image upload
+             if (model.ProfileImage != null && model.ProfileImage.Length > 0)
+             {
+                 var uploadsDir = Path.Combine(_webHostEnvironment.WebRootPath, "uploads", "profiles");
+                 if (!Directory.Exists(uploadsDir))
+                     Directory.CreateDirectory(uploadsDir);
+                 
+                 var fileName = $"{user.Id}_{Guid.NewGuid():N}{Path.GetExtension(model.ProfileImage.FileName)}";
+                 var filePath = Path.Combine(uploadsDir, fileName);
+                 
+                 using (var stream = new FileStream(filePath, FileMode.Create))
+                 {
+                     await model.ProfileImage.CopyToAsync(stream);
+                 }
+                 
+                 user.ProfileImageUrl = $"/uploads/profiles/{fileName}";
+             }
+             else if (!string.IsNullOrEmpty(model.ProfileImageUrl))
+             {
+                 user.ProfileImageUrl = model.ProfileImageUrl;
+             }
+             
              user.UpdatedAt = DateTime.UtcNow;
 
              var result = await _userManager.UpdateAsync(user);
