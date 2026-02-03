@@ -20,6 +20,13 @@ jobs:
     - name: Publish
       run: dotnet publish -c Release -o ./publish
 
+    - name: Take App Offline
+      run: |
+        echo "<html><body><h1>Maintenance Mode</h1><p>Deploying new version...</p></body></html>" > app_offline.htm
+        sudo apt-get update
+        sudo apt-get install -y lftp
+        lftp -e "set ssl:verify-certificate no; put -O /wwwroot/ app_offline.htm; bye" -u site53172,${{ secrets.FTP_PASSWORD }} site53172.siteasp.net
+
     - name: FTP Deploy
       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
       with:
@@ -28,3 +35,7 @@ jobs:
         password: ${{ secrets.FTP_PASSWORD }}
         local-dir: ./publish/
         server-dir: /wwwroot/
+
+    - name: Bring App Online
+      run: |
+        lftp -e "set ssl:verify-certificate no; rm /wwwroot/app_offline.htm; bye" -u site53172,${{ secrets.FTP_PASSWORD }} site53172.siteasp.net
