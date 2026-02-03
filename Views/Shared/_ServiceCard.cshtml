@@ -1,0 +1,86 @@
+@* Service Card - Reusable Partial View
+   Usage: <partial name="_ServiceCard" model="service" />
+*@
+
+@model LocalServicesBooking.Models.Entities.Service
+
+<div class="service-card">
+    <div class="service-card-image">
+        @if (Model.Images != null && Model.Images.Any())
+        {
+            <img src="@Model.Images.First().ImageUrl" alt="@Model.ServiceName">
+        }
+        else
+        {
+            <img src="/images/placeholders/service-default.jpg" alt="@Model.ServiceName">
+        }
+        
+        @* Badges for special services *@
+        @if (Model.IsFeatured)
+        {
+            <div class="service-card-badge badge-featured">Featured</div>
+        }
+        else if (Model.IsNew)
+        {
+            <div class="service-card-badge badge-new">New</div>
+        }
+        else if (Model.IsPopular)
+        {
+            <div class="service-card-badge badge-popular">Popular</div>
+        }
+    </div>
+    
+    <div class="service-card-body">
+        <h3 class="service-card-title">@Model.ServiceName</h3>
+        
+        @* Provider Info *@
+        <div class="service-card-provider">
+            @if (!string.IsNullOrEmpty(Model.Provider?.ProfileImageUrl))
+            {
+                <img src="@Model.Provider.ProfileImageUrl" alt="@Model.Provider.FirstName @Model.Provider.LastName">
+            }
+            <span>@Model.Provider?.FirstName @Model.Provider?.LastName</span>
+        </div>
+        
+        @* Rating *@
+        <div class="service-card-rating">
+            <i class="bi bi-star-fill"></i>
+            <span class="service-card-rating-value">@Model.AverageRating?.ToString("0.0")</span>
+            <span class="service-card-rating-count">(@Model.ReviewCount reviews)</span>
+        </div>
+        
+        @* Description *@
+        <p class="service-card-description">@Model.Description</p>
+        
+        @* Meta Info *@
+        <div class="service-card-meta">
+            <div class="service-card-meta-item">
+                <i class="bi bi-clock"></i>
+                <span>@Model.DurationMinutes min</span>
+            </div>
+            <div class="service-card-meta-item">
+                <i class="bi bi-geo-alt"></i>
+                <span>@Model.Location</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="service-card-footer">
+        @* Price *@
+        <div class="service-card-price">
+            <span class="service-card-price-label">From</span>
+            <span class="service-card-price-value">$@Model.Price</span>
+            <span class="service-card-price-period">/ session</span>
+        </div>
+        
+        @* Action Buttons *@
+        <div class="service-card-actions">
+            <a href="@Url.Action("Book", "Services", new { id = Model.ServiceId })" class="btn btn-booking-primary">
+                <i class="bi bi-calendar-check me-2"></i>Book Now
+            </a>
+            <a href="@Url.Action("Details", "Services", new { id = Model.ServiceId })" class="btn btn-booking-secondary">
+                Details
+            </a>
+        </div>
+    </div>
+</div>
