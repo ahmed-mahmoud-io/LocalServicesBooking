@@ -700,8 +700,8 @@ h6 {
 
 @media (max-width: 768px) {
   .hero {
-    min-height: 125dvh;
-    /* Increased to fully cover bottom gap */
+    min-height: 150dvh;
+    /* Increased to 150dvh as requested */
     padding: 80px var(--space-md) var(--space-xl);
     /* Reset top padding to allow centering while clearing navbar */
     justify-content: center;
