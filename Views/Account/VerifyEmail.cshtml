@@ -26,7 +26,7 @@
             
             <div class="mb-4">
                 <label asp-for="Code" class="form-label">Enter Verification Code</label>
-                <div class="otp-input-container d-flex gap-2 justify-content-center">
+                <div class="otp-input-container d-flex gap-2 justify-content-center" data-otp-target="#fullCode">
                     <input type="text" maxlength="1" class="form-control text-center fs-4 fw-bold" style="width: 50px; height: 60px;" />
                     <input type="text" maxlength="1" class="form-control text-center fs-4 fw-bold" style="width: 50px; height: 60px;" />
                     <input type="text" maxlength="1" class="form-control text-center fs-4 fw-bold" style="width: 50px; height: 60px;" />
@@ -62,46 +62,6 @@
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // OTP Input handling - combine into hidden field
-            const otpInputs = document.querySelectorAll('.otp-input-container input:not([type="hidden"])');
-            const fullCodeInput = document.getElementById('fullCode');
-            
-            function updateFullCode() {
-                let code = '';
-                otpInputs.forEach(input => {
-                    code += input.value;
-                });
-                fullCodeInput.value = code;
-            }
-            
-            otpInputs.forEach((input, index) => {
-                input.addEventListener('input', function() {
-                    if (this.value.length === 1 && index < otpInputs.length - 1) {
-                        otpInputs[index + 1].focus();
-                    }
-                    updateFullCode();
-                });
-                
-                input.addEventListener('keydown', function(e) {
-                    if (e.key === 'Backspace' && !this.value && index > 0) {
-                        otpInputs[index - 1].focus();
-                    }
-                });
-                
-                input.addEventListener('paste', function(e) {
-                    e.preventDefault();
-                    const paste = (e.clipboardData || window.clipboardData).getData('text');
-                    const chars = paste.split('').slice(0, 6);
-                    chars.forEach((char, i) => {
-                        if (otpInputs[i]) otpInputs[i].value = char;
-                    });
-                    updateFullCode();
-                    if (chars.length === 6) {
-                        otpInputs[5].focus();
-                    }
-                });
-            });
-            
             // Countdown timer
             let timeLeft = 60;
             const countdownEl = document.getElementById('countdown');

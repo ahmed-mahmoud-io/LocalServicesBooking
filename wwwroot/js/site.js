@@ -375,31 +375,63 @@ const OTPInput = {
     init() {
         const otpContainers = document.querySelectorAll('.otp-input-container');
         otpContainers.forEach(container => {
-            const inputs = container.querySelectorAll('input');
+            const inputs = container.querySelectorAll('input:not([type="hidden"])');
+            const targetSelector = container.dataset.otpTarget;
+            const targetInput = targetSelector ? document.querySelector(targetSelector) : null;
+
+            const updateHiddenInput = () => {
+                if (targetInput) {
+                    let code = '';
+                    inputs.forEach(input => code += input.value);
+                    targetInput.value = code;
+                }
+            };
 
             inputs.forEach((input, index) => {
+                // Handle normal input
                 input.addEventListener('input', (e) => {
                     const value = e.target.value;
+
                     if (value.length === 1 && index < inputs.length - 1) {
                         inputs[index + 1].focus();
                     }
+                    updateHiddenInput();
                 });
 
+                // Handle backspace navigation
                 input.addEventListener('keydown', (e) => {
                     if (e.key === 'Backspace' && !e.target.value && index > 0) {
                         inputs[index - 1].focus();
                     }
+                    // Update on backspace too, slightly delayed to catch the deletion
+                    setTimeout(updateHiddenInput, 0);
                 });
 
+                // Handle Paste
                 input.addEventListener('paste', (e) => {
                     e.preventDefault();
-                    const paste = (e.clipboardData || window.clipboardData).getData('text');
-                    const chars = paste.split('').slice(0, inputs.length);
-                    chars.forEach((char, i) => {
-                        if (inputs[i]) inputs[i].value = char;
-                    });
+                    const pasteData = (e.clipboardData || window.clipboardData).getData('text');
+                    const chars = pasteData.replace(/\D/g, '').split('').slice(0, inputs.length); // Only allow digits
+
                     if (chars.length > 0) {
-                        inputs[Math.min(chars.length, inputs.length) - 1].focus();
+                        chars.forEach((char, i) => {
+                            if (inputs[i]) {
+                                inputs[i].value = char;
+                            }
+                        });
+
+                        // Focus the next empty input or the last one
+                        const nextIndex = Math.min(chars.length, inputs.length - 1);
+                        inputs[nextIndex].focus();
+
+                        updateHiddenInput();
+                    }
+                });
+
+                // Prevent non-numeric input (optional, but good for UX)
+                input.addEventListener('keypress', (e) => {
+                    if (e.key.length === 1 && !/\d/.test(e.key)) {
+                        e.preventDefault();
                     }
                 });
             });
