@@ -331,8 +331,8 @@ const MobileMenu = {
             }
         });
 
-        // Close menu when clicking a nav link
-        collapse.querySelectorAll('.nav-link').forEach(link => {
+        // Close menu when clicking a nav link (but not dropdown toggles)
+        collapse.querySelectorAll('.nav-link:not(.dropdown-toggle)').forEach(link => {
             link.addEventListener('click', () => {
                 const bsCollapse = bootstrap.Collapse.getInstance(collapse);
                 if (bsCollapse) bsCollapse.hide();
