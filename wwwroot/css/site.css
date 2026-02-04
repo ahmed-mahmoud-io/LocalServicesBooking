@@ -710,6 +710,8 @@ h6 {
 
   .hero-title {
     margin-bottom: var(--space-sm);
+    margin-top: var(--space-2xl);
+    /* Added top spacing as requested */
   }
 
   .hero-subtitle {
