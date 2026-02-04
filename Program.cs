@@ -27,19 +27,26 @@ builder.Services.AddIdentity<User, IdentityRole<int>>(options =>
 
 builder.Services.AddTransient<Microsoft.AspNetCore.Identity.UI.Services.IEmailSender, LocalServicesBooking.Services.EmailSender>();
 
-// Initialize Firebase Admin SDK
+// Initialize Firebase Admin SDK (Optional - only if service account key exists)
 var serviceAccountPath = builder.Configuration["Firebase:ServiceAccountKeyPath"] ?? "serviceAccountKey.json";
-if (File.Exists(serviceAccountPath))
+try
 {
-    FirebaseAdmin.FirebaseApp.Create(new FirebaseAdmin.AppOptions()
+    if (File.Exists(serviceAccountPath))
     {
-        Credential = Google.Apis.Auth.OAuth2.GoogleCredential.FromFile(serviceAccountPath)
-    });
+        FirebaseAdmin.FirebaseApp.Create(new FirebaseAdmin.AppOptions()
+        {
+            Credential = Google.Apis.Auth.OAuth2.GoogleCredential.FromFile(serviceAccountPath)
+        });
+        Console.WriteLine("Firebase initialized successfully");
+    }
+    else
+    {
+        Console.WriteLine($"Firebase ServiceAccountKey not found at {serviceAccountPath} - Firebase features will be disabled");
+    }
 }
-else
+catch (Exception ex)
 {
-    // Fallback or log warning - Application might fail if Firebase features are accessed without init
-    Console.WriteLine($"Warning: Firebase ServiceAccountKey not found at {serviceAccountPath}");
+    Console.WriteLine($"Failed to initialize Firebase: {ex.Message} - Firebase features will be disabled");
 }
 
 builder.Services.AddAuthentication()
@@ -95,7 +102,7 @@ using (var scope = app.Services.CreateScope())
 // }
 app.UseDeveloperExceptionPage();
 
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection(); // Commented: MonsterASP handles SSL termination
 app.UseRouting();
 app.UseAuthorization();
 
