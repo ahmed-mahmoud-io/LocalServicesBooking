@@ -707,7 +707,11 @@ h6 {
   }
 
   .hero-title {
-    margin-bottom: var(--space-xs);
+    margin-bottom: 0;
+  }
+
+  .hero-title br {
+    display: none;
   }
 
   .hero-subtitle {
