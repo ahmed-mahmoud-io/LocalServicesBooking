@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using LocalServicesBooking.Data;
 using LocalServicesBooking.Models.Entities;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.HttpOverrides;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -75,6 +76,14 @@ builder.Services.AddScoped<LocalServicesBooking.Services.Interfaces.IMessagingSe
 builder.Services.AddSignalR();
 builder.Services.AddControllersWithViews();
 
+// Configure Forwarded Headers for Proxy/Load Balancer (MonsterASP)
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    options.KnownNetworks.Clear(); 
+    options.KnownProxies.Clear();
+});
+
 var app = builder.Build();
 
 // Apply pending migrations and seed data
@@ -95,14 +104,15 @@ using (var scope = app.Services.CreateScope())
 }
 
 // Configure the HTTP request pipeline.
-// if (!app.Environment.IsDevelopment())
-// {
-    // app.UseExceptionHandler("/Home/Error");
-    // app.UseHsts();
-// }
-app.UseDeveloperExceptionPage();
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Home/Error");
+    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseHsts();
+}
 
-// app.UseHttpsRedirection(); // Commented: MonsterASP handles SSL termination
+app.UseForwardedHeaders();
+app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthorization();
 
