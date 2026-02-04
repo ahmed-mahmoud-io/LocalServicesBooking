@@ -199,15 +199,23 @@ const PasswordStrength = {
     init() {
         const passwordInputs = document.querySelectorAll('[data-password-strength]');
         passwordInputs.forEach(input => {
+            const wrapper = input.closest('.password-toggle-wrapper');
+            const target = wrapper || input.parentNode;
+
             const indicator = document.createElement('div');
             indicator.className = 'password-strength-indicator mt-2';
             indicator.innerHTML = `
                 <div class="strength-bar">
                     <div class="strength-fill"></div>
                 </div>
-                <small class="strength-text text-muted"></small>
+                <small class="strength-text text-secondary"></small>
             `;
-            input.parentNode.appendChild(indicator);
+
+            if (wrapper) {
+                target.parentNode.insertBefore(indicator, target.nextSibling);
+            } else {
+                target.appendChild(indicator);
+            }
 
             input.addEventListener('input', () => this.checkStrength(input, indicator));
         });

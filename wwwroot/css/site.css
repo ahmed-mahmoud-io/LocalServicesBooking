@@ -232,6 +232,25 @@ h6 {
 /* ============================================
    Navbar
    ============================================ */
+@media (min-width: 1024px) {
+  html {
+    font-size: 18px;
+  }
+}
+
+.otp-input-container input {
+  color: var(--text-primary) !important;
+  background-color: var(--input-bg) !important;
+  caret-color: var(--primary);
+  padding: 0 !important;
+  line-height: 60px;
+}
+
+.otp-input-container input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px var(--primary-subtle);
+}
+
 /* ============================================
    Navbar
    ============================================ */
