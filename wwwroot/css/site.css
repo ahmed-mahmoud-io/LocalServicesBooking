@@ -701,7 +701,9 @@ h6 {
 @media (max-width: 768px) {
   .hero {
     min-height: auto;
-    padding: calc(var(--space-5xl) + 180px) var(--space-md) var(--space-3xl);
+    padding: calc(var(--space-5xl) + 240px) var(--space-md) var(--space-3xl);
+    justify-content: flex-start;
+    /* Ensure content starts after padding, don't center vertically on mobile */
   }
 
   .hero-title {
