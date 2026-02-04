@@ -147,55 +147,99 @@ namespace LocalServicesBooking.Controllers
                 }
                 else
                 {
-                    // If the user does not have an account, then ask the user to create an account.
+                    // Check if user exists with this email
                     var email = info.Principal.FindFirstValue(ClaimTypes.Email);
                     if (email != null)
                     {
-                        var user = await _userManager.FindByEmailAsync(email);
-                        if (user == null)
+                        var existingUser = await _userManager.FindByEmailAsync(email);
+                        if (existingUser != null)
                         {
-                            user = new User 
-                            { 
-                                UserName = email, 
-                                Email = email,
-                                FirstName = info.Principal.FindFirstValue(ClaimTypes.GivenName),
-                                LastName = info.Principal.FindFirstValue(ClaimTypes.Surname),
-                                UserType = "Customer", // Default behavior
-                                EmailConfirmed = true,
-                                ProfileImageUrl = info.Principal.FindFirstValue("picture") // Try to get profile picture
-                            };
-                            var createResult = await _userManager.CreateAsync(user);
-                            if (createResult.Succeeded)
-                            {
-                                createResult = await _userManager.AddLoginAsync(user, info);
-                                if (createResult.Succeeded)
-                                {
-                                    await _signInManager.SignInAsync(user, isPersistent: false);
-                                    return LocalRedirect(returnUrl);
-                                }
-                            }
-                        }
-                        else
-                        {
-                            var linkResult = await _userManager.AddLoginAsync(user, info);
+                            // Link the external login to existing user
+                            var linkResult = await _userManager.AddLoginAsync(existingUser, info);
                             if (linkResult.Succeeded)
                             {
-                                await _signInManager.SignInAsync(user, isPersistent: false);
+                                await _signInManager.SignInAsync(existingUser, isPersistent: false);
                                 return LocalRedirect(returnUrl);
                             }
                         }
                     }
 
-                    // If we got here, something failed
-                    ModelState.AddModelError(string.Empty, "Could not create an account for you.");
-                    return View("Login", new LoginViewModel());
+                    // User doesn't exist, redirect to ChooseRole
+                    return RedirectToAction("ChooseRole", new { returnUrl });
                 }
             }
             catch (Exception ex)
             {
-                // FALLBACK DEBUGGING: Return raw error text to see why it crashes
-                return Content($"CRITICAL ERROR DURING LOGIN:\n\n{ex.Message}\n\nSTACK TRACE:\n{ex.StackTrace}\n\nINNER EXCEPTION:\n{ex.InnerException?.Message}");
+                return Content($"CRITICAL ERROR DURING LOGIN:\n\n{ex.Message}\n\nSTACK TRACE:\n{ex.StackTrace}");
             }
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> ChooseRole(string returnUrl = null)
+        {
+            var info = await _signInManager.GetExternalLoginInfoAsync();
+            if (info == null)
+            {
+                return RedirectToAction("Login");
+            }
+
+            ViewData["ReturnUrl"] = returnUrl;
+            ViewData["UserName"] = info.Principal.FindFirstValue(ClaimTypes.GivenName) ?? "Guest";
+            return View();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CompleteExternalLogin(string userType, string returnUrl = null)
+        {
+            returnUrl = returnUrl ?? Url.Content("~/");
+            var info = await _signInManager.GetExternalLoginInfoAsync();
+            if (info == null)
+            {
+                return RedirectToAction("Login");
+            }
+
+            var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+            var user = new User
+            {
+                UserName = email,
+                Email = email,
+                FirstName = info.Principal.FindFirstValue(ClaimTypes.GivenName),
+                LastName = info.Principal.FindFirstValue(ClaimTypes.Surname),
+                UserType = userType,
+                EmailConfirmed = true,
+                ProfileImageUrl = info.Principal.FindFirstValue("picture"),
+                CreatedAt = DateTime.UtcNow
+            };
+
+            var result = await _userManager.CreateAsync(user);
+            if (result.Succeeded)
+            {
+                result = await _userManager.AddLoginAsync(user, info);
+                if (result.Succeeded)
+                {
+                    await _userManager.AddToRoleAsync(user, userType);
+                    await _signInManager.SignInAsync(user, isPersistent: false);
+                    
+                    if (userType == "Provider")
+                    {
+                         // Redirect to Provider setup or dashboard if such page exists
+                         return RedirectToAction("Index", "Dashboard"); 
+                    }
+                    return LocalRedirect(returnUrl);
+                }
+            }
+            
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+            
+            ViewData["ReturnUrl"] = returnUrl;
+            ViewData["UserName"] = user.FirstName ?? "Guest";
+            return View("ChooseRole");
         }
 
         [HttpGet]
@@ -301,6 +345,38 @@ namespace LocalServicesBooking.Controllers
              }
 
              return View(model);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SwitchRole()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return NotFound();
+
+            var currentRole = user.UserType;
+            var newRole = currentRole == "Customer" ? "Provider" : "Customer";
+
+            // Update UserType
+            user.UserType = newRole;
+            var result = await _userManager.UpdateAsync(user);
+
+            if (result.Succeeded)
+            {
+                // Remove from old role and add to new role
+                await _userManager.RemoveFromRoleAsync(user, currentRole);
+                await _userManager.AddToRoleAsync(user, newRole);
+
+                // Refresh sign-in to update claims
+                await _signInManager.RefreshSignInAsync(user);
+
+                TempData["SuccessMessage"] = $"Switched to {newRole} account successfully!";
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Failed to switch role.";
+            }
+
+            return RedirectToAction("Profile");
         }
     }
 }

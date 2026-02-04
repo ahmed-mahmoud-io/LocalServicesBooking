@@ -1,0 +1,88 @@
+<div class="auth-container">
+    <div class="auth-card animate-scale-in" style="max-width: 800px;">
+        <div class="auth-logo mb-4">
+            LocalServices<span class="text-gradient">Booking</span>
+        </div>
+        
+        <h1 class="auth-title mb-2">Welcome, @ViewData["UserName"]!</h1>
+        <p class="auth-subtitle mb-5">To finish setting up your account, please tell us how you plan to use our platform.</p>
+        
+        <form asp-action="CompleteExternalLogin" method="post">
+            <input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
+            
+            <div class="row g-4 justify-content-center">
+                <!-- Customer Card -->
+                <div class="col-md-6">
+                    <input type="radio" name="userType" value="Customer" id="typeCustomer" class="btn-check" checked />
+                    <label for="typeCustomer" class="role-card h-100 p-4 border rounded-4 cursor-pointer position-relative transition-all">
+                        <div class="icon-wrapper mb-3 text-primary text-center">
+                            <i class="bi bi-person-circle display-4"></i>
+                        </div>
+                        <h3 class="h4 text-center mb-3">Book Services</h3>
+                        <p class="text-muted text-center small mb-0">
+                            I want to find and book professionals for my needs.
+                        </p>
+                        <div class="check-indicator position-absolute top-0 end-0 m-3 text-primary opacity-0 transition-all">
+                            <i class="bi bi-check-circle-fill fs-4"></i>
+                        </div>
+                    </label>
+                </div>
+
+                <!-- Provider Card -->
+                <div class="col-md-6">
+                    <input type="radio" name="userType" value="Provider" id="typeProvider" class="btn-check" />
+                    <label for="typeProvider" class="role-card h-100 p-4 border rounded-4 cursor-pointer position-relative transition-all">
+                        <div class="icon-wrapper mb-3 text-secondary text-center">
+                            <i class="bi bi-briefcase display-4"></i>
+                        </div>
+                        <h3 class="h4 text-center mb-3">Offer Services</h3>
+                        <p class="text-muted text-center small mb-0">
+                            I want to offer my skills and services to customers.
+                        </p>
+                        <div class="check-indicator position-absolute top-0 end-0 m-3 text-primary opacity-0 transition-all">
+                            <i class="bi bi-check-circle-fill fs-4"></i>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="mt-5 text-center">
+                <button type="submit" class="btn btn-primary btn-lg px-5">
+                    <i class="bi bi-arrow-right me-2"></i> Continue
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .role-card {
+        transition: all 0.3s ease;
+        background: var(--bg-card);
+        border: 2px solid var(--border-color);
+    }
+    
+    .btn-check:checked + .role-card {
+        border-color: var(--primary);
+        background: var(--primary-subtle);
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-lg);
+    }
+    
+    .btn-check:checked + .role-card .check-indicator {
+        opacity: 1 !important;
+    }
+    
+    .btn-check:checked + .role-card .icon-wrapper {
+        transform: scale(1.1);
+    }
+    
+    .role-card:hover {
+        border-color: var(--border-hover);
+        background: var(--bg-tertiary);
+    }
+
+    [data-theme="dark"] .role-card p {
+        color: var(--text-secondary) !important;
+    }
+</style>
