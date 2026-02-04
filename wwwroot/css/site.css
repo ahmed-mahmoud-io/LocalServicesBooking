@@ -624,7 +624,7 @@ h6 {
    Hero Section
    ============================================ */
 .hero {
-  min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -700,9 +700,9 @@ h6 {
 
 @media (max-width: 768px) {
   .hero {
-    min-height: 100vh;
-    padding: 100px var(--space-md) var(--space-3xl);
-    /* Reset top padding to avoid pushing content too far down when centered */
+    min-height: 100dvh;
+    padding: 80px var(--space-md) var(--space-xl);
+    /* Reset top padding to allow centering while clearing navbar */
     justify-content: center;
     /* Center content vertically */
   }
