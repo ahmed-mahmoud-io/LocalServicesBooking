@@ -171,6 +171,11 @@ body {
   overflow-x: hidden;
 }
 
+.page-home {
+  background-color: hsl(320, 48%, 16%);
+  /* Matches hero gradient end color */
+}
+
 /* ============================================
    Typography
    ============================================ */
