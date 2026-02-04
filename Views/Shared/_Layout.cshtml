@@ -1,4 +1,13 @@
-﻿<!DOCTYPE html>
+﻿@{
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+    var action = ViewContext.RouteData.Values["action"]?.ToString();
+    var title = ViewData["Title"]?.ToString();
+    
+    var isHomePage = (string.Equals(controller, "Home", StringComparison.OrdinalIgnoreCase) && 
+                      string.Equals(action, "Index", StringComparison.OrdinalIgnoreCase)) || 
+                      string.Equals(title, "Home", StringComparison.OrdinalIgnoreCase);
+}
+<!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
     <meta charset="utf-8" />
@@ -25,15 +34,7 @@
     <link rel="stylesheet" href="~/LocalServicesBooking.styles.css" asp-append-version="true" />
 </head>
 <body class="d-flex flex-column min-vh-100 @(isHomePage ? "page-home" : "")">
-    @{
-        var controller = ViewContext.RouteData.Values["controller"]?.ToString();
-        var action = ViewContext.RouteData.Values["action"]?.ToString();
-        var title = ViewData["Title"]?.ToString();
-        
-        var isHomePage = (string.Equals(controller, "Home", StringComparison.OrdinalIgnoreCase) && 
-                          string.Equals(action, "Index", StringComparison.OrdinalIgnoreCase)) || 
-                          string.Equals(title, "Home", StringComparison.OrdinalIgnoreCase);
-    }
+    <!-- logic moved to top -->
 
     <header>
         <nav class="navbar navbar-expand-lg fixed-top @(isHomePage ? "navbar-home" : "")">
