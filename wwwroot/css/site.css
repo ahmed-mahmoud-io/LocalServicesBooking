@@ -164,16 +164,42 @@ html {
 body {
   font-family: var(--font-primary);
   font-weight: var(--font-weight-regular);
-  background-color: var(--bg-primary);
   color: var(--text-primary);
   line-height: 1.6;
   transition: background-color var(--transition-base), color var(--transition-base);
   overflow-x: hidden;
+
+  /* Legendary Animated Background Base */
+  background: linear-gradient(-45deg, var(--bg-primary), var(--bg-secondary), var(--bg-tertiary), #1a1a2e);
+  background-size: 400% 400%;
+  animation: gradient-flow 15s ease infinite;
+}
+
+[data-theme="light"] body {
+  background: linear-gradient(-45deg, #fdfbfb, #e0eafc, #ebedee, #cfd9df);
+  background-size: 400% 400%;
+  animation: gradient-flow 15s ease infinite;
+}
+
+@keyframes gradient-flow {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 .page-home {
-  background-color: hsl(320, 48%, 16%);
-  /* Matches hero gradient end color */
+  /* Let the global body background shine through, or enhance it */
+  background: linear-gradient(-45deg, #240b36, #c31432, #1a1a2e, #0f0c29);
+  background-size: 400% 400%;
+  animation: gradient-flow 20s ease infinite;
 }
 
 /* ============================================
