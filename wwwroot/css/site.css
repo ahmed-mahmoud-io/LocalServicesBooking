@@ -707,7 +707,7 @@ h6 {
   }
 
   .hero-title {
-    margin-bottom: var(--space-lg);
+    margin-bottom: var(--space-xs);
   }
 
   .hero-subtitle {
