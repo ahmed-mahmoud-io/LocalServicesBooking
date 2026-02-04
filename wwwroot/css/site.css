@@ -700,7 +700,8 @@ h6 {
 
 @media (max-width: 768px) {
   .hero {
-    min-height: 100dvh;
+    min-height: 110dvh;
+    /* Ensure background extends below viewport */
     padding: 80px var(--space-md) var(--space-xl);
     /* Reset top padding to allow centering while clearing navbar */
     justify-content: center;
@@ -708,11 +709,7 @@ h6 {
   }
 
   .hero-title {
-    margin-bottom: 0;
-  }
-
-  .hero-title br {
-    display: none;
+    margin-bottom: var(--space-sm);
   }
 
   .hero-subtitle {
@@ -723,6 +720,7 @@ h6 {
     flex-direction: column;
     gap: var(--space-sm);
     padding: 0 var(--space-md);
+    margin-bottom: var(--space-md);
   }
 
   .hero-cta .btn {
