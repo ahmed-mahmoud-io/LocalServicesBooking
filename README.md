@@ -56,7 +56,7 @@ Make sure to configure:
 
 Add screenshots of your project here
 
-🌐 Live Demo
+🌐 Live Website
 
 "Click here to view the live website" (http://services-booking.runasp.net)
 
